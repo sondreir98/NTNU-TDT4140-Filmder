@@ -1,50 +1,37 @@
-# React + TypeScript + Vite
+# Filmder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Filmder is a social platform designed to simplify movie selection among friends and acquaintances. The platform allows users to easily find and choose movies using recommendations, filtering options, and a swipe function that makes exploring different movies fun and intuitive. With Filmder, users can mark which movies they like and dislike, create movie nights with friends, and see which movies everyone at a gathering can agree on. Filmder facilitates a simple and social experience where you can avoid long discussions about movie selection and instead quickly find a movie everyone wants to see.
 
-Currently, two official plugins are available:
+By offering multiple filtering and recommendation features, Filmder helps customize the movie selection to the individual user's taste and preferences. The platform creates an engaging experience by facilitating a fun and social process of finding a movie, while also allowing you to keep track of which movies you and your friends have enjoyed.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup
 
-## Expanding the ESLint configuration
+`git clone <url>` - Download the repository to your computer
+`cd filmder` - Move into the project
+`pnpm install` - Install all packages
+`pnpm dev` - Start the app in development mode
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Scripts
 
-- Configure the top-level `parserOptions` property like this:
+`pnpm dev` - Start the app in development mode
+`pnpm build` - Build the app for production
+`pnpm preview` - Start the production app
+`pnpm check` - Check and fix safe linting and format errors
+`pnpm check:unsafe` - Check and fix both safe and unsafe linting and format errors
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Recommended VSCode extentions
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+[Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) - Enable format on save functionality for Biome
+[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) - Makes sure everyone writes consisten git commits
+[Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) - Write faster tailwindstyling via autofinishing functionality
+[Pretty Typescript Erros](https://marketplace.visualstudio.com/items?itemName=YoavBls.pretty-ts-errors) - Quickly unwrap complex typeerrors in Typescript
+[Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) and [Markdown Preview Enhanced](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced) - Write and preview Markdown more easily
+[markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) - Makes sure everyone writes consistent Markdown
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## Libraries and frameworks
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+[React](https://react.dev/)
+[React Router](https://reactrouter.com/start/library/installation)
+[Vite](https://vite.dev/guide/)
+[Biome](https://biomejs.dev/)
+[Tailwind](https://tailwindcss.com/docs/)
