@@ -22,7 +22,7 @@ By offering multiple filtering and recommendation features, Filmder helps custom
 ## Recommended VSCode extentions
 
 [Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) - Enable format on save functionality for Biome
-[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) - Makes sure everyone writes consisten git commits
+[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) - Makes sure everyone writes consistent git commits
 [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) - Write faster tailwindstyling via autofinishing functionality
 [Pretty Typescript Erros](https://marketplace.visualstudio.com/items?itemName=YoavBls.pretty-ts-errors) - Quickly unwrap complex typeerrors in Typescript
 [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) and [Markdown Preview Enhanced](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced) - Write and preview Markdown more easily
