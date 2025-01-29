@@ -30,8 +30,11 @@ By offering multiple filtering and recommendation features, Filmder helps custom
 
 ## Libraries and frameworks
 
+[Typescript](https://www.typescriptlang.org/docs/)
 [React](https://react.dev/)
 [React Router](https://reactrouter.com/start/library/installation)
 [Vite](https://vite.dev/guide/)
+[Vitest](https://vitest.dev/guide/)
 [Biome](https://biomejs.dev/)
 [Tailwind](https://tailwindcss.com/docs/)
+[Firebase](https://firebase.google.com/docs/web/setup)
