@@ -1,7 +1,13 @@
 @theme {
-	/*
-    Examples of theme variables:
-    --font-test: Geneva, Verdana, sans-serif;
-    --color-test: #9067C6;
+    /*
+        Examples of theme variables:
+        --font-test: Geneva, Verdana, sans-serif;
+        --color-test: #9067C6;
     */
+    --color-dark: #166088;
+    --color-primary: #7BB2D9;
+    --color-secondary: #EDF7D2;
+    --color-positive: #26532B;
+    --color-negative: #B80C09;
+
 }
