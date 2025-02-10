@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import Home from "./Home.tsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Navbar from "./Navbar.tsx";
 
 createRoot(
 	document.querySelector(":root > body > #react-root") as HTMLDivElement,
@@ -11,6 +12,7 @@ createRoot(
 		<BrowserRouter>
 			<Routes>
 				<Route index element={<Home/>} />
+				<Navbar/>
 			</Routes>
 		</BrowserRouter>
 	</StrictMode>,
