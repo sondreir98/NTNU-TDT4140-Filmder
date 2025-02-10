@@ -1,8 +1,24 @@
+//Må laste ned @heroicons/react pakken
+import { HomeIcon, MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/24/solid";
+import { Link } from "react-router-dom";
+
 function Navbar() {
     return (
-        <nav className="fixed bottom-0 w-full bg-white shadow-lg p-3">
-            <div className="flex justify-around items-center">
-            </div>
+        <nav className="fixed bottom-0 w-full bg-white shadow-lg p-10">
+        <div className="flex justify-around items-center -space-x-150">
+            <Link to="/profile" className="flex flex-col items-center text-dark hover:text-blue-500">
+                <UsersIcon className="h-6 w-6" />
+                <span className="text-sm">Friends</span>
+            </Link>
+            <Link to="/" className="flex flex-col items-center text-dark hover:text-blue-500">
+                <HomeIcon className="h-6 w-6" />
+                <span className="text-sm">Home</span>
+            </Link>
+            <Link to="/settings" className="flex flex-col items-center text-dark hover:text-blue-500">
+                <MagnifyingGlassIcon className="h-6 w-6" />
+                <span className="text-sm">Search</span>
+            </Link>
+        </div>
         </nav>
     );
 }

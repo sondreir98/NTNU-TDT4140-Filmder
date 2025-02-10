@@ -10,9 +10,9 @@ createRoot(
 ).render(
 	<StrictMode>
 		<BrowserRouter>
+			<Navbar/>
 			<Routes>
 				<Route index element={<Home/>} />
-				<Navbar/>
 			</Routes>
 		</BrowserRouter>
 	</StrictMode>,
