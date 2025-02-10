@@ -4,6 +4,15 @@ function getMovieByGenre(genre: string, movies: FilmTest[]): FilmTest | null {
 	return movies.find((movie) => movie.genre.some((g) => g === genre)) || null;
 }
 
+function randomMovie(
+	_likedMovies: FilmTest[],
+	notWatched: FilmTest[],
+): FilmTest | null {
+	const length = notWatched.length;
+	const randomNum: number = Math.floor(Math.random() * length);
+	return notWatched[randomNum];
+}
+
 function newMovie(
 	likedMovies: FilmTest[],
 	notWatched: FilmTest[],
