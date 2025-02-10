@@ -13,16 +13,16 @@ function Profile() {
 
 			<p className="text-gray-600">email@example.com</p>
 
-			<div className="flex flex-col gap-5 mt-18 self-start ml-96">
+			<div className="flex flex-col gap-5 mt-18 item">
 				<button
 					type="button"
-					className="px-8 py-4 bg-green-400 text-white rounded-lg hover:bg-green-600 transition"
+					className="px-8 py-4 bg-positive text-white rounded-lg hover:bg-green-600 transition"
 				>
 					Liked films
 				</button>
 				<button
 					type="button"
-					className="px-8 py-4 bg-red-400 text-white rounded-lg hover:bg-red-600 transition"
+					className="px-8 py-4 bg-negative text-white rounded-lg hover:bg-red-600 transition"
 				>
 					Disliked films
 				</button>
