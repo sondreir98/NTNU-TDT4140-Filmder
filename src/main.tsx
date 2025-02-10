@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import Home from "./Home.tsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./Home.tsx";
 import Profile from "./Profile.tsx";
 
 createRoot(
@@ -11,8 +11,8 @@ createRoot(
 	<StrictMode>
 		<BrowserRouter>
 			<Routes>
-				<Route index element={<Home/>} />
-				<Route path="/Profile" element={<Profile/>} />
+				<Route index element={<Home />} />
+				<Route path="/Profile" element={<Profile />} />
 			</Routes>
 		</BrowserRouter>
 	</StrictMode>,
