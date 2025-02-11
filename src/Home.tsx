@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { BsHandThumbsUp } from "react-icons/bs";
-import { BsHandThumbsDown } from "react-icons/bs";
 
 type FilmTest = { name: string; year: number; genre: string[]; info: string };
 
@@ -38,10 +36,14 @@ const LikeButton: React.FC<ButtonProps> = ({ setLikedMovies }) => {
 				}
 			}}
 			type="button"
-			className="fixed bottom-20 right-10 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-positive"
+			className="fixed bottom-20 right-10 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-positive w-[120px]"
 		>
-			<BsHandThumbsUp className="text-white" size={20} />
-			Like
+			<img
+				src="https://img.icons8.com/?size=100&id=2744&format=png&color=FFFFFF"
+				alt="Like"
+				className="w-6 h-6"
+			/>
+			<span>Like</span>
 		</button>
 	);
 };
@@ -55,10 +57,14 @@ const DisLikeButton: React.FC<ButtonProps> = ({ setDislikedMovies }) => {
 				}
 			}}
 			type="button"
-			className="fixed bottom-20 left-10 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-negative"
+			className="fixed bottom-20 left-10 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-negative w-[125px]"
 		>
-			<BsHandThumbsDown className="text-white" size={20} />
-			Pass
+			<img
+				src="https://img.icons8.com/?size=100&id=2913&format=png&color=FFFFFF"
+				alt="Dislike"
+				className="w-6 h-6"
+			/>
+			<span>Dislike</span>
 		</button>
 	);
 };
