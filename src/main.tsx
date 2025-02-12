@@ -3,9 +3,10 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Home.tsx";
+import Navbar from "./Navbar.tsx";
+import Profile from "./Profile.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
-import Profile from "./Profile.tsx";
 
 createRoot(
 	document.querySelector(":root > body > #react-root") as HTMLDivElement,
@@ -18,6 +19,7 @@ createRoot(
 				<Route path="/signup" element={<SignUpPage />} />
 				<Route path="/Profile" element={<Profile />} />
 			</Routes>
+			<Navbar />
 		</BrowserRouter>
 	</StrictMode>,
 );
