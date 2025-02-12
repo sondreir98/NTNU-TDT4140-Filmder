@@ -42,19 +42,21 @@ const SignUpPage = () => {
 				onChange={(e) => setConfirmPassword(e.target.value)}
 				className="shadow mb-4 px-4 py-4 w-80 rounded-[2vw] bg-blue-400/50 font-semibold text-white focus:outline-none focus:ring-2 focus:ring-gray-300 ease-linear transition duration-500"
 			/>
-			<button
-				type="button"
+			<Link
+				to="/"
 				onClick={async () => {
-					const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+					const userCredential = await createUserWithEmailAndPassword(
+						auth,
+						email,
+						password,
+					);
 					await updateProfile(userCredential.user, { displayName: username });
-					await setDoc(doc(db, "users", userCredential.user.uid), {
-						username: username
-					});
+					await setDoc(doc(db, "users", userCredential.user.uid), {});
 				}}
 				className="border-2 border-white w-80 px-6 py-3 rounded-[2vw] text-lg font-semibold shadow-md hover:bg-gray-200 transition"
 			>
 				Sign Up
-			</button>
+			</Link>
 			<p className="mt-4">
 				Already have an account?{" "}
 				<Link
