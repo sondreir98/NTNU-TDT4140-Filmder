@@ -1,42 +1,83 @@
-import { useState } from "react";
-
-type FilmTest = { name: string; year: number; genre: string[]; info: string };
-
-const dummyMovie: FilmTest = {
-	name: "Dummy Movie",
-	year: 2024,
-	genre: ["Action", "Adventure"],
-	info: "En testfilm",
-};
+import { useEffect, useState } from "react";
+import { getMovieByGenre, newMovie, randomMovie } from "./Algoritme";
+import { type FilmTest, dummyMovies } from "./Movies";
 
 function App() {
 	const [likedMovies, setLikedMovies] = useState<FilmTest[]>([]);
 	const [dislikedMovies, setDislikedMovies] = useState<FilmTest[]>([]);
+	const [notDisplayed, setNotDisplayed] = useState<FilmTest[]>([
+		...dummyMovies,
+	]);
+	const [currentMovie, setCurrentMovie] = useState<FilmTest | null>(
+		notDisplayed[0] || null,
+	);
+
+	//dette er for at loggingen skal ha med nyeste endringer
+	useEffect(() => {
+		console.log("Updated likedMovies list:", likedMovies);
+	}, [likedMovies]);
+
+	useEffect(() => {
+		console.log("Updated disLikedMovies list:", dislikedMovies);
+	}, [dislikedMovies]);
+
+	const getNextMovie = () => {
+		if (notDisplayed.length > 0) {
+			const nextMovie = randomMovie(likedMovies, notDisplayed);
+			setCurrentMovie(nextMovie);
+		} else {
+			alert("You have seen all movies!");
+			setNotDisplayed([...dummyMovies]);
+		}
+	};
+
+	const handleLike = () => {
+		if (currentMovie) {
+			setLikedMovies((prev) => [...prev, currentMovie]);
+			console.log("Updated likedMovies list: ", likedMovies);
+			setNotDisplayed((prev) =>
+				prev.filter((movie) => movie.name !== currentMovie.name),
+			);
+			getNextMovie();
+		}
+	};
+
+	const handleDislike = () => {
+		if (currentMovie) {
+			setDislikedMovies((prev) => [...prev, currentMovie]);
+			console.log("Updated disLikedMovies list: ", dislikedMovies);
+			setNotDisplayed((prev) =>
+				prev.filter((movie) => movie.name !== currentMovie.name),
+			);
+			getNextMovie();
+		}
+	};
 
 	return (
 		<>
 			<h1 className="text-xl">Filmder</h1>
-			<LikeButton setLikedMovies={setLikedMovies} />
-			<DisLikeButton setDislikedMovies={setDislikedMovies} />
+			<div className="flex justify-center items-center mt-4">
+				<h2 className="text-2xl font-bold">
+					{currentMovie ? currentMovie.name : "Loading..."}
+				</h2>
+			</div>
+			<LikeButton handleLike={handleLike} />
+			<DisLikeButton handleDislike={handleDislike} />
 		</>
 	);
 }
 
 interface ButtonProps {
-	setLikedMovies?: React.Dispatch<React.SetStateAction<FilmTest[]>>;
-	setDislikedMovies?: React.Dispatch<React.SetStateAction<FilmTest[]>>;
+	handleLike?: () => void;
+	handleDislike?: () => void;
 }
 
-const LikeButton: React.FC<ButtonProps> = ({ setLikedMovies }) => {
+const LikeButton: React.FC<ButtonProps> = ({ handleLike }) => {
 	return (
 		<button
-			onClick={() => {
-				if (setLikedMovies) {
-					setLikedMovies((prev) => [...prev, dummyMovie]);
-				}
-			}}
+			onClick={handleLike}
 			type="button"
-			className="fixed bottom-20 right-10 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-positive w-[120px]"
+			className="fixed bottom-20 right-10 flex justify-center items-center gap-1 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-positive w-[120px]"
 		>
 			<img
 				src="https://img.icons8.com/?size=100&id=2744&format=png&color=FFFFFF"
@@ -48,16 +89,12 @@ const LikeButton: React.FC<ButtonProps> = ({ setLikedMovies }) => {
 	);
 };
 
-const DisLikeButton: React.FC<ButtonProps> = ({ setDislikedMovies }) => {
+const DisLikeButton: React.FC<ButtonProps> = ({ handleDislike }) => {
 	return (
 		<button
-			onClick={() => {
-				if (setDislikedMovies) {
-					setDislikedMovies((prev) => [...prev, dummyMovie]);
-				}
-			}}
+			onClick={handleDislike}
 			type="button"
-			className="fixed bottom-20 left-10 flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-negative w-[125px]"
+			className="fixed bottom-20 left-10 flex justify-center items-center gap-1 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-negative w-[125px]"
 		>
 			<img
 				src="https://img.icons8.com/?size=100&id=2913&format=png&color=FFFFFF"

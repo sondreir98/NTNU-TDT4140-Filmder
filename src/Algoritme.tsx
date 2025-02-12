@@ -1,19 +1,27 @@
-type FilmTest = { name: string; year: number; genre: string[]; info: string };
+export type FilmTest = {
+	name: string;
+	year: number;
+	genre: string[];
+	info: string;
+};
 
-function getMovieByGenre(genre: string, movies: FilmTest[]): FilmTest | null {
+export function getMovieByGenre(
+	genre: string,
+	movies: FilmTest[],
+): FilmTest | null {
 	return movies.find((movie) => movie.genre.some((g) => g === genre)) || null;
 }
 
-function randomMovie(
+export function randomMovie(
 	_likedMovies: FilmTest[],
-	notWatched: FilmTest[],
+	notDisplayed: FilmTest[],
 ): FilmTest | null {
-	const length = notWatched.length;
+	const length = notDisplayed.length;
 	const randomNum: number = Math.floor(Math.random() * length);
-	return notWatched[randomNum];
+	return notDisplayed[randomNum];
 }
 
-function newMovie(
+export function newMovie(
 	likedMovies: FilmTest[],
 	notWatched: FilmTest[],
 ): FilmTest | null {
