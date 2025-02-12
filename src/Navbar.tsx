@@ -1,20 +1,20 @@
-import { HomeIcon, MagnifyingGlassIcon, UsersIcon } from "@heroicons/react/24/solid";
 import { NavLink } from "react-router-dom";
+import { HomeIcon,UsersIcon,SearchIcon } from "./Icons";
 
 function Navbar() {
     return (
         <nav className="fixed bottom-0 w-full bg-white shadow-lg p-10">
         <div className="flex justify-around items-center -mx-4">
             <NavLink to="/Friends" className="flex flex-col items-center text-dark hover:text-blue-500">
-                <UsersIcon className="h-6 w-6" />
+                <UsersIcon/>
                 <span className="text-sm">Friends</span>
             </NavLink>
             <NavLink to="/Home" className="flex flex-col items-center text-dark hover:text-blue-500">
-                <HomeIcon className="h-6 w-6" />
+                <HomeIcon/>
                 <span className="text-sm">Home</span>
             </NavLink>
             <NavLink to="/Search" className="flex flex-col items-center text-dark hover:text-blue-500">
-                <MagnifyingGlassIcon className="h-6 w-6" />
+                <SearchIcon/>
                 <span className="text-sm">Search</span>
             </NavLink>
         </div>
