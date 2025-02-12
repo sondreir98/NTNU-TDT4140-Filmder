@@ -1,5 +1,7 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { auth } from "../Database";
 
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
@@ -24,13 +26,15 @@ const LoginPage = () => {
 				className="shadow mb-4 px-4 py-4 w-80 rounded-[2vw] bg-primary text-dark font-semibold focus:outline-none focus:ring-2 focus:ring-dark ease-linear transition duration-200"
 			/>
 			<div className="flex flex-col gap-4">
-				<button
-					type="button"
-					onClick={() => console.log("log in clicked")}
+				<Link
+					to="/"
+					onClick={async () => {
+						await signInWithEmailAndPassword(auth, email, password);
+					}}
 					className="border-2 border-dark w-80 px-6 py-3 rounded-[2vw] text-lg font-semibold shadow-md bg-primary text-dark hover:bg-gray-200 transition"
 				>
 					Log In
-				</button>
+				</Link>
 				<div className="text-center mt-2">
 					<p className="text-sm">
 						Don't have an account?{" "}
