@@ -1,13 +1,13 @@
 type FilmTest = { name: string; year: number; genre: string[]; info: string };
 
-function getMovieByYear(
+export function getMovieByYear(
 	specifiedYear: number,
 	movies: FilmTest[],
 ): FilmTest | null {
 	return movies.find((movie) => movie.year === specifiedYear) || null;
 }
 
-function getMovieByGenres(
+export function getMovieByGenres(
 	genres: string[],
 	movies: FilmTest[],
 ): FilmTest | null {

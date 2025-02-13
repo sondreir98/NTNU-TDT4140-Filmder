@@ -9,7 +9,7 @@ function Navbar() {
                 <UsersIcon/>
                 <span className="text-sm">Friends</span>
             </NavLink>
-            <NavLink to="/Home" className="flex flex-col items-center text-dark hover:text-blue-500">
+            <NavLink to="/" className="flex flex-col items-center text-dark hover:text-blue-500">
                 <HomeIcon/>
                 <span className="text-sm">Home</span>
             </NavLink>
