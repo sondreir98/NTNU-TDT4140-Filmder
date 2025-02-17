@@ -1,5 +1,8 @@
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
+import { auth, db } from "../Database";
 
 const SignUpPage = () => {
 	const [email, setEmail] = useState("");
@@ -39,13 +42,21 @@ const SignUpPage = () => {
 				onChange={(e) => setConfirmPassword(e.target.value)}
 				className="shadow mb-4 px-4 py-4 w-80 rounded-[2vw] bg-blue-400/50 font-semibold text-white focus:outline-none focus:ring-2 focus:ring-gray-300 ease-linear transition duration-500"
 			/>
-			<button
-				type="button"
-				onClick={() => console.log("Sign Up clicked")}
+			<Link
+				to="/"
+				onClick={async () => {
+					const userCredential = await createUserWithEmailAndPassword(
+						auth,
+						email,
+						password,
+					);
+					await updateProfile(userCredential.user, { displayName: username });
+					await setDoc(doc(db, "users", userCredential.user.uid), {});
+				}}
 				className="border-2 border-white w-80 px-6 py-3 rounded-[2vw] text-lg font-semibold shadow-md hover:bg-gray-200 transition"
 			>
 				Sign Up
-			</button>
+			</Link>
 			<p className="mt-4">
 				Already have an account?{" "}
 				<Link
