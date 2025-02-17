@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getMovieByGenre, newMovie, randomMovie } from "./Algoritme";
 import { getMovieByGenres, getMovieByYear } from "./Filtrering";
 import { type FilmTest, dummyMovies } from "./Movies";
@@ -102,17 +103,18 @@ function App() {
 						? currentMovie.name
 						: noMoreMovies
 							? "No more movies"
-							: "Laster..."}
+							: "Loading..."}
 				</h2>
 			</div>
 			<LikeButton handleLike={handleLike} />
 			<DisLikeButton handleDislike={handleDislike} />
+			<ProfilePageButton />
 
 			{/*C: Kode lagt til for filtrering (linje 112-179)*/}
 			<button
 				onClick={handleFilterToggle}
 				type="button"
-				className="fixed top-10 right-10 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+				className="fixed top-20 right-10 bg-secondary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
 			>
 				<img
 					src="https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline/filter.svg"
@@ -216,6 +218,23 @@ const DisLikeButton: React.FC<ButtonProps> = ({ handleDislike }) => {
 				className="w-6 h-6"
 			/>
 			<span>Dislike</span>
+		</button>
+	);
+};
+
+const ProfilePageButton: React.FC<ButtonProps> = () => {
+	const navigate = useNavigate();
+	return (
+		<button
+			onClick={() => navigate("/Profile")}
+			type="button"
+			className="fixed top-10 right-10 flex justify-center items-center gap-1 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-primary"
+		>
+			<img
+				src="https://www.svgrepo.com/show/343494/profile-user-account.svg"
+				alt="Go to profile"
+				className="w-4 h-4"
+			/>
 		</button>
 	);
 };
