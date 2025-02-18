@@ -1,54 +1,76 @@
-export type FilmTest = {
-	name: string;
-	year: number;
-	genre: string[];
-	info: string;
-};
+import {
+	getAllMovies,
+	getDislikedMovies,
+	getLikedMovies,
+} from "./DatabaseAccess";
+import type { FilmTest } from "./Movies";
 
-export function getMovieByGenre(
+export async function getNotDisplayedMovieByGenreAndYear(
 	genre: string,
-	movies: FilmTest[],
-): FilmTest | null {
-	return movies.find((movie) => movie.genre.some((g) => g === genre)) || null;
-}
-
-export function randomMovie(
-	_likedMovies: FilmTest[],
-	notDisplayed: FilmTest[],
-): FilmTest | null {
-	const length = notDisplayed.length;
-	const randomNum: number = Math.floor(Math.random() * length);
-	return notDisplayed[randomNum];
-}
-
-export function newMovie(
-	likedMovies: FilmTest[],
-	notWatched: FilmTest[],
-): FilmTest | null {
-	const genresLiked: { [key: string]: number } = {};
-	for (const movie of likedMovies) {
-		for (const g of movie.genre) {
-			if (genresLiked[g] !== null) {
-				genresLiked[g] += 1;
-			} else {
-				genresLiked[g] = 1;
+	year: number | null,
+): Promise<FilmTest | null> {
+	const moviesByGenreAndYear = await getAllMovies([genre], year);
+	console.log("get", moviesByGenreAndYear, year);
+	for (const movie of moviesByGenreAndYear) {
+		const likedMovies = await getLikedMovies();
+		const dislikedMovies = await getDislikedMovies();
+		let isDisplayed = false;
+		for (const likedMovie of likedMovies) {
+			if (likedMovie.name == movie.name) {
+				isDisplayed = true;
+				break;
 			}
 		}
+		for (const dislikedMovie of dislikedMovies) {
+			if (dislikedMovie.name == movie.name) {
+				isDisplayed = true;
+				break;
+			}
+		}
+		if (isDisplayed) {
+			continue;
+		}
+		return movie;
 	}
+	return null;
+}
 
-	let totGenres = 0; //teller totalt antall sjangre telt opp
-	for (const value of Object.values(genresLiked)) {
-		//brukes senere for total sannsynlighet?
-		totGenres += value;
-	}
+export async function nextMovie(
+	genres: string[],
+	year: number | null,
+): Promise<FilmTest | null> {
+	const likedMovies = await getLikedMovies();
+	const dislikedMovies = await getDislikedMovies();
+	const genresLiked: { [key: string]: number } = {};
+	const genresDisliked: { [key: string]: number } = {};
 
-	let largestKey = ""; //finner brukers mest sette sjanger
-	for (const key of Object.keys(genresLiked)) {
-		if (largestKey === "") {
-			largestKey = key;
-		} else if (genresLiked[key] > genresLiked[largestKey]) {
-			largestKey = key;
+	for (const genre of genres) {
+		let numberOfLikedMovies = 0;
+		let numberOfDislikedMovies = 0;
+		for (const movie of likedMovies) {
+			if (movie.genre.includes(genre)) {
+				numberOfLikedMovies++;
+			}
+			for (const movie of dislikedMovies) {
+				if (movie.genre.includes(genre)) {
+					numberOfDislikedMovies++;
+				}
+			}
+			genresLiked[genre] = numberOfLikedMovies;
+			genresDisliked[genre] = numberOfDislikedMovies;
 		}
 	}
-	return getMovieByGenre(largestKey, notWatched);
+	let mostPopularGenre = "";
+	for (const genre of genres) {
+		if (
+			mostPopularGenre == "" ||
+			genresLiked[genre] - genresDisliked[genre] >
+				genresLiked[mostPopularGenre] - genresDisliked[mostPopularGenre]
+		) {
+			mostPopularGenre = genre;
+		}
+	}
+	console.log("gen", mostPopularGenre);
+
+	return await getNotDisplayedMovieByGenreAndYear(mostPopularGenre, year);
 }

@@ -1,69 +1,46 @@
-import { useEffect, useState } from "react";
-import { getMovieByGenre, newMovie, randomMovie } from "./Algoritme";
-import { getMovieByGenres, getMovieByYear } from "./Filtrering";
-import { type FilmTest, dummyMovies } from "./Movies";
+import { useCallback, useEffect, useState } from "react";
+import { nextMovie } from "./Algoritme";
+import { dislikeMovie, likeMovie } from "./DatabaseAccess";
+import type { FilmTest } from "./Movies";
 
-function App() {
-	const [likedMovies, setLikedMovies] = useState<FilmTest[]>([]);
-	const [dislikedMovies, setDislikedMovies] = useState<FilmTest[]>([]);
-	const [notDisplayed, setNotDisplayed] = useState<FilmTest[]>([
-		...dummyMovies,
-	]);
-	const [currentMovie, setCurrentMovie] = useState<FilmTest | null>(
-		notDisplayed[0] || null,
-	);
-
+function Home() {
 	//C: Kode lagt til for filtrering (5 linjer)
+	const genres = ["Action", "Comedy", "Drama", "Horror", "Romance", "Sci-Fi"];
 	const [noMoreMovies, setNoMoreMovies] = useState<boolean>(false);
 	const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-	const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-	const [selectedYear, setSelectedYear] = useState<number | "">("");
-	const genres = ["Action", "Comedy", "Drama", "Horror", "Romance", "Sci-Fi"];
-
-	//dette er for at loggingen skal ha med nyeste endringer
-	useEffect(() => {
-		console.log("Updated likedMovies list:", likedMovies);
-	}, [likedMovies]);
+	const [selectedGenres, setSelectedGenres] = useState<string[]>(genres);
+	const [selectedYear, setSelectedYear] = useState<number | null>(null);
+	const [currentMovie, setCurrentMovie] = useState<FilmTest | null>(null);
 
 	useEffect(() => {
-		console.log("Updated disLikedMovies list:", dislikedMovies);
-	}, [dislikedMovies]);
+		(async () => {
+			const movie = await nextMovie(selectedGenres, selectedYear);
+			console.log(movie);
+			setCurrentMovie(movie);
+		})();
+	}, []);
 
-	// C: Endret litt her (linje 33-66)
-	const getNextMovie = (movies: FilmTest[]) => {
-		if (movies.length > 0) {
-			const nextMovie = randomMovie(likedMovies, movies);
-			setCurrentMovie(nextMovie);
-			setNoMoreMovies(false);
-		} else {
-			setCurrentMovie(null);
-			setNoMoreMovies(true);
+	const handleLike = useCallback(() => {
+		async function doStuff() {
+			if (currentMovie !== null) {
+				await likeMovie(currentMovie.movieId);
+			}
+			console.log(currentMovie);
+			setCurrentMovie(await nextMovie(selectedGenres, selectedYear));
 		}
-	};
+		doStuff();
+	}, []);
 
-	const handleLike = () => {
-		if (currentMovie) {
-			setLikedMovies((prev) => [...prev, currentMovie]);
-			setNotDisplayed((prev) =>
-				prev.filter((movie) => movie.name !== currentMovie.name),
-			);
-			getNextMovie(
-				notDisplayed.filter((movie) => movie.name !== currentMovie.name),
-			);
+	const handleDislike = useCallback(() => {
+		async function doStuff() {
+			if (currentMovie !== null) {
+				await dislikeMovie(currentMovie.movieId);
+			}
+			console.log(currentMovie);
+			setCurrentMovie(await nextMovie(selectedGenres, selectedYear));
 		}
-	};
-
-	const handleDislike = () => {
-		if (currentMovie) {
-			setDislikedMovies((prev) => [...prev, currentMovie]);
-			setNotDisplayed((prev) =>
-				prev.filter((movie) => movie.name !== currentMovie.name),
-			);
-			getNextMovie(
-				notDisplayed.filter((movie) => movie.name !== currentMovie.name),
-			);
-		}
-	};
+		doStuff();
+	}, []);
 
 	//C: Kode lagt til for filtrering (linje 69-94)
 	const handleFilterToggle = () => {
@@ -76,20 +53,9 @@ function App() {
 	};
 	const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const year = event.target.value;
-		setSelectedYear(year === "" ? "" : Number.parseInt(year));
+		setSelectedYear(year === null ? null : Number.parseInt(year));
 	};
 	const applyFilter = () => {
-		let filtered = dummyMovies;
-		if (selectedGenres.length > 0) {
-			filtered = filtered.filter((movie) =>
-				movie.genre.some((g) => selectedGenres.includes(g)),
-			);
-		}
-		if (selectedYear) {
-			filtered = filtered.filter((movie) => movie.year === selectedYear);
-		}
-		setNotDisplayed(filtered);
-		getNextMovie(filtered);
 		setIsFilterOpen(false);
 	};
 
@@ -98,11 +64,11 @@ function App() {
 			<h1 className="text-xl">Filmder</h1>
 			<div className="flex justify-center items-center mt-4">
 				<h2 className="text-2xl font-bold">
-					{currentMovie
+					{currentMovie !== null
 						? currentMovie.name
 						: noMoreMovies
 							? "No more movies"
-							: "Laster..."}
+							: "Loading..."}
 				</h2>
 			</div>
 			<LikeButton handleLike={handleLike} />
@@ -158,7 +124,7 @@ function App() {
 							<input
 								id="yearInput"
 								type="number"
-								value={selectedYear}
+								value={selectedYear === null ? "" : selectedYear}
 								onChange={handleYearChange}
 								className="w-full border p-2 rounded"
 								placeholder="Enter year (e.g. 2005)"
@@ -220,4 +186,4 @@ const DisLikeButton: React.FC<ButtonProps> = ({ handleDislike }) => {
 	);
 };
 
-export default App;
+export default Home;
