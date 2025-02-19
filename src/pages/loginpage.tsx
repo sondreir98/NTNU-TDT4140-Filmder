@@ -26,7 +26,7 @@ const LoginPage = () => {
 
 	return (
 		//Fargene endres til slutt
-		<div className="flex flex-col items-center justify-center min-h-screen bg-secondary text-dark">
+		<div className="flex flex-col items-center justify-center h-full bg-secondary text-dark">
 			<h1 className="text-4xl font-bold mb-8">Filmder</h1>
 			<input
 				type="email"

@@ -1,5 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import {
+	browserLocalPersistence,
+	getAuth,
+	setPersistence,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
@@ -22,4 +26,4 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-await setPersistence(auth, browserLocalPersistence)
+await setPersistence(auth, browserLocalPersistence);

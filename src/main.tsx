@@ -1,22 +1,34 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Home from "./Home.tsx";
 import Navbar from "./Navbar.tsx";
 import Profile from "./Profile.tsx";
+import ProfilePageButton from "./ProfilePageButton.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
+
+const Header = () => {
+	const location = useLocation();
+
+	return (
+		<header className="max-w-md mx-auto h-1/20 flex justify-between items-center p-4">
+			<h1 className="text-xl">Filmder</h1>
+			{!["/login", "/signup"].includes(location.pathname) && (
+				<ProfilePageButton />
+			)}
+		</header>
+	);
+};
 
 createRoot(
 	document.querySelector(":root > body > #react-root") as HTMLDivElement,
 ).render(
 	<StrictMode>
 		<BrowserRouter>
-			<header className="max-w-md mx-auto h-1/10">
-				<h1 className="text-xl">Filmder</h1>
-			</header>
-			<main className="max-w-md mx-auto h-8/10 relative">
+			<Header />
+			<main className="max-w-md mx-auto h-17/20 relative">
 				<Routes>
 					<Route index element={<Home />} />
 					<Route path="/login" element={<LoginPage />} />
@@ -24,7 +36,7 @@ createRoot(
 					<Route path="/Profile" element={<Profile />} />
 				</Routes>
 			</main>
-			<footer className="max-w-md mx-auto h-1/10">
+			<footer className="max-w-md mx-auto h-2/20">
 				<Navbar />
 			</footer>
 		</BrowserRouter>

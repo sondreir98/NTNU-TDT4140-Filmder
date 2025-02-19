@@ -17,6 +17,7 @@ function Home() {
 
 	const updateMovie = useCallback(() => {
 		async function ineractWithDatabase() {
+			setCurrentMovie(null);
 			const newMovie = await nextMovie(selectedGenres, selectedYear);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
@@ -33,6 +34,7 @@ function Home() {
 			if (currentMovie !== null) {
 				await likeMovie(currentMovie.movieId);
 			}
+			setCurrentMovie(null);
 			const newMovie = await nextMovie(selectedGenres, selectedYear);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
@@ -49,6 +51,7 @@ function Home() {
 			if (currentMovie !== null) {
 				await dislikeMovie(currentMovie.movieId);
 			}
+			setCurrentMovie(null);
 			const newMovie = await nextMovie(selectedGenres, selectedYear);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
@@ -77,25 +80,24 @@ function Home() {
 		setSelectedYear(year);
 	};
 	const applyFilter = () => {
+		setCurrentMovie(null);
 		updateMovie();
 		setIsFilterOpen(false);
 	};
 
 	return (
 		<>
-			<div className="w-full h-full">
+			<div className="w-full h-full flex bg-gray-200 items-center justify-center">
 				{currentMovie !== null ? (
 					<img
-						className="w-full h-full"
+						className="max-w-full max-h-full"
 						src={currentMovie.logoPath}
 						alt={currentMovie.name}
 					/>
 				) : noMoreMovies ? (
-					<h2 className="w-full text-center text-2xl font-bold">
-						No more movies
-					</h2>
+					<h2 className="text-center text-3xl font-bold">No more movies</h2>
 				) : (
-					<h2 className="text-centertext-2xl font-bold">Loading...</h2>
+					<h2 className="text-center text-3xl font-bold">Loading...</h2>
 				)}
 			</div>
 
@@ -106,7 +108,7 @@ function Home() {
 			<button
 				onClick={handleFilterToggle}
 				type="button"
-				className="absolute top-5 right-10 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+				className="absolute top-2 right-4 bg-secondary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
 			>
 				<img
 					src="https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline/filter.svg"
