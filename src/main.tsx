@@ -13,13 +13,20 @@ createRoot(
 ).render(
 	<StrictMode>
 		<BrowserRouter>
-			<Routes>
-				<Route index element={<Home />} />
-				<Route path="/login" element={<LoginPage />} />
-				<Route path="/signup" element={<SignUpPage />} />
-				<Route path="/Profile" element={<Profile />} />
-			</Routes>
-			<Navbar />
+			<header className="max-w-md mx-auto h-1/10">
+				<h1 className="text-xl">Filmder</h1>
+			</header>
+			<main className="max-w-md mx-auto h-8/10 relative">
+				<Routes>
+					<Route index element={<Home />} />
+					<Route path="/login" element={<LoginPage />} />
+					<Route path="/signup" element={<SignUpPage />} />
+					<Route path="/Profile" element={<Profile />} />
+				</Routes>
+			</main>
+			<footer className="max-w-md mx-auto h-1/10">
+				<Navbar />
+			</footer>
 		</BrowserRouter>
 	</StrictMode>,
 );

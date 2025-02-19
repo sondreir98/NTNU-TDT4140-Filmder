@@ -1,69 +1,64 @@
-import { useEffect, useState } from "react";
-import { getMovieByGenre, newMovie, randomMovie } from "./Algoritme";
-import { getMovieByGenres, getMovieByYear } from "./Filtrering";
-import { type FilmTest, dummyMovies } from "./Movies";
+import { useCallback, useEffect, useState } from "react";
+import { nextMovie } from "./Algoritme";
+import { dislikeMovie, likeMovie } from "./DatabaseAccess";
+import type { Film } from "./Movies";
 
-function App() {
-	const [likedMovies, setLikedMovies] = useState<FilmTest[]>([]);
-	const [dislikedMovies, setDislikedMovies] = useState<FilmTest[]>([]);
-	const [notDisplayed, setNotDisplayed] = useState<FilmTest[]>([
-		...dummyMovies,
-	]);
-	const [currentMovie, setCurrentMovie] = useState<FilmTest | null>(
-		notDisplayed[0] || null,
-	);
-
-	//C: Kode lagt til for filtrering (5 linjer)
+function Home() {
+	const genres = ["action", "comedy", "drama", "horror", "romance", "sci-fi"];
 	const [noMoreMovies, setNoMoreMovies] = useState<boolean>(false);
 	const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-	const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-	const [selectedYear, setSelectedYear] = useState<number | "">("");
-	const genres = ["Action", "Comedy", "Drama", "Horror", "Romance", "Sci-Fi"];
-
-	//dette er for at loggingen skal ha med nyeste endringer
-	useEffect(() => {
-		console.log("Updated likedMovies list:", likedMovies);
-	}, [likedMovies]);
+	const [selectedGenres, setSelectedGenres] = useState<string[]>(genres);
+	const [selectedYear, setSelectedYear] = useState<number | null>(null);
+	const [currentMovie, setCurrentMovie] = useState<Film | null>(null);
 
 	useEffect(() => {
-		console.log("Updated disLikedMovies list:", dislikedMovies);
-	}, [dislikedMovies]);
+		updateMovie();
+	}, []);
 
-	// C: Endret litt her (linje 33-66)
-	const getNextMovie = (movies: FilmTest[]) => {
-		if (movies.length > 0) {
-			const nextMovie = randomMovie(likedMovies, movies);
-			setCurrentMovie(nextMovie);
-			setNoMoreMovies(false);
-		} else {
-			setCurrentMovie(null);
-			setNoMoreMovies(true);
+	const updateMovie = useCallback(() => {
+		async function ineractWithDatabase() {
+			const newMovie = await nextMovie(selectedGenres, selectedYear);
+			setCurrentMovie(newMovie);
+			if (newMovie === null) {
+				setNoMoreMovies(true);
+			} else {
+				setNoMoreMovies(false);
+			}
 		}
-	};
+		ineractWithDatabase();
+	}, [selectedGenres, selectedYear]);
 
-	const handleLike = () => {
-		if (currentMovie) {
-			setLikedMovies((prev) => [...prev, currentMovie]);
-			setNotDisplayed((prev) =>
-				prev.filter((movie) => movie.name !== currentMovie.name),
-			);
-			getNextMovie(
-				notDisplayed.filter((movie) => movie.name !== currentMovie.name),
-			);
+	const handleLike = useCallback(() => {
+		async function ineractWithDatabase() {
+			if (currentMovie !== null) {
+				await likeMovie(currentMovie.movieId);
+			}
+			const newMovie = await nextMovie(selectedGenres, selectedYear);
+			setCurrentMovie(newMovie);
+			if (newMovie === null) {
+				setNoMoreMovies(true);
+			} else {
+				setNoMoreMovies(false);
+			}
 		}
-	};
+		ineractWithDatabase();
+	}, [currentMovie, selectedGenres, selectedYear]);
 
-	const handleDislike = () => {
-		if (currentMovie) {
-			setDislikedMovies((prev) => [...prev, currentMovie]);
-			setNotDisplayed((prev) =>
-				prev.filter((movie) => movie.name !== currentMovie.name),
-			);
-			getNextMovie(
-				notDisplayed.filter((movie) => movie.name !== currentMovie.name),
-			);
+	const handleDislike = useCallback(() => {
+		async function ineractWithDatabase() {
+			if (currentMovie !== null) {
+				await dislikeMovie(currentMovie.movieId);
+			}
+			const newMovie = await nextMovie(selectedGenres, selectedYear);
+			setCurrentMovie(newMovie);
+			if (newMovie === null) {
+				setNoMoreMovies(true);
+			} else {
+				setNoMoreMovies(false);
+			}
 		}
-	};
+		ineractWithDatabase();
+	}, [currentMovie, selectedGenres, selectedYear]);
 
 	//C: Kode lagt til for filtrering (linje 69-94)
 	const handleFilterToggle = () => {
@@ -75,36 +70,35 @@ function App() {
 		);
 	};
 	const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const year = event.target.value;
-		setSelectedYear(year === "" ? "" : Number.parseInt(year));
+		let year: number | null = Number.parseInt(event.target.value);
+		if (Number.isNaN(year)) {
+			year = null;
+		}
+		setSelectedYear(year);
 	};
 	const applyFilter = () => {
-		let filtered = dummyMovies;
-		if (selectedGenres.length > 0) {
-			filtered = filtered.filter((movie) =>
-				movie.genre.some((g) => selectedGenres.includes(g)),
-			);
-		}
-		if (selectedYear) {
-			filtered = filtered.filter((movie) => movie.year === selectedYear);
-		}
-		setNotDisplayed(filtered);
-		getNextMovie(filtered);
+		updateMovie();
 		setIsFilterOpen(false);
 	};
 
 	return (
 		<>
-			<h1 className="text-xl">Filmder</h1>
-			<div className="flex justify-center items-center mt-4">
-				<h2 className="text-2xl font-bold">
-					{currentMovie
-						? currentMovie.name
-						: noMoreMovies
-							? "No more movies"
-							: "Laster..."}
-				</h2>
+			<div className="w-full h-full">
+				{currentMovie !== null ? (
+					<img
+						className="w-full h-full"
+						src={currentMovie.logoPath}
+						alt={currentMovie.name}
+					/>
+				) : noMoreMovies ? (
+					<h2 className="w-full text-center text-2xl font-bold">
+						No more movies
+					</h2>
+				) : (
+					<h2 className="text-centertext-2xl font-bold">Loading...</h2>
+				)}
 			</div>
+
 			<LikeButton handleLike={handleLike} />
 			<DisLikeButton handleDislike={handleDislike} />
 
@@ -112,7 +106,7 @@ function App() {
 			<button
 				onClick={handleFilterToggle}
 				type="button"
-				className="fixed top-10 right-10 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+				className="absolute top-5 right-10 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
 			>
 				<img
 					src="https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline/filter.svg"
@@ -122,12 +116,12 @@ function App() {
 			</button>
 
 			{isFilterOpen && (
-				<div className="fixed inset-0 flex items-center justify-center bg-grey bg-opacity-50">
+				<div className="absolute inset-0 flex items-center justify-center bg-grey bg-opacity-50">
 					<div className="bg-white p-6 rounded-lg shadow-lg w-3/4 relative">
 						<button
 							onClick={handleFilterToggle}
 							type="button"
-							className="absolute top-2 right-2 bg-gray-300 text-sm px-2 py-1 rounded hover:bg-gray-400 transition"
+							className="bg-gray-300 text-sm px-2 py-1 rounded hover:bg-gray-400 transition"
 						>
 							Close
 						</button>
@@ -158,7 +152,7 @@ function App() {
 							<input
 								id="yearInput"
 								type="number"
-								value={selectedYear}
+								value={selectedYear === null ? "" : selectedYear}
 								onChange={handleYearChange}
 								className="w-full border p-2 rounded"
 								placeholder="Enter year (e.g. 2005)"
@@ -191,7 +185,7 @@ const LikeButton: React.FC<ButtonProps> = ({ handleLike }) => {
 		<button
 			onClick={handleLike}
 			type="button"
-			className="fixed bottom-32 right-10 flex justify-center items-center gap-1 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-positive w-[120px]"
+			className="absolute bottom-32 right-10 flex justify-center items-center gap-1 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-positive w-[120px]"
 		>
 			<img
 				src="https://img.icons8.com/?size=100&id=2744&format=png&color=FFFFFF"
@@ -208,7 +202,7 @@ const DisLikeButton: React.FC<ButtonProps> = ({ handleDislike }) => {
 		<button
 			onClick={handleDislike}
 			type="button"
-			className="fixed bottom-32 left-10 flex justify-center items-center gap-1 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-negative w-[125px]"
+			className="absolute bottom-32 left-10 flex justify-center items-center gap-1 text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer bg-negative w-[125px]"
 		>
 			<img
 				src="https://img.icons8.com/?size=100&id=2913&format=png&color=FFFFFF"
@@ -220,4 +214,4 @@ const DisLikeButton: React.FC<ButtonProps> = ({ handleDislike }) => {
 	);
 };
 
-export default App;
+export default Home;
