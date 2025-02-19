@@ -14,9 +14,13 @@ function Home() {
 	useEffect(() => {
 		updateMovie();
 	}, []);
+	const clearMovie = useCallback(() => {
+		setCurrentMovie(null);
+	}, []);
 
 	const updateMovie = useCallback(() => {
 		async function ineractWithDatabase() {
+			clearMovie();
 			const newMovie = await nextMovie(selectedGenres, selectedYear);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
@@ -33,6 +37,7 @@ function Home() {
 			if (currentMovie !== null) {
 				await likeMovie(currentMovie.movieId);
 			}
+			clearMovie();
 			const newMovie = await nextMovie(selectedGenres, selectedYear);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
@@ -49,6 +54,7 @@ function Home() {
 			if (currentMovie !== null) {
 				await dislikeMovie(currentMovie.movieId);
 			}
+			clearMovie();
 			const newMovie = await nextMovie(selectedGenres, selectedYear);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
@@ -77,25 +83,26 @@ function Home() {
 		setSelectedYear(year);
 	};
 	const applyFilter = () => {
+		clearMovie();
 		updateMovie();
 		setIsFilterOpen(false);
 	};
 
 	return (
 		<>
-			<div className="w-full h-full">
+			<div className="w-full h-full flex bg-gray-200 items-center justify-center">
 				{currentMovie !== null ? (
 					<img
-						className="w-full h-full"
+						className="w-full"
 						src={currentMovie.logoPath}
 						alt={currentMovie.name}
 					/>
 				) : noMoreMovies ? (
-					<h2 className="w-full text-center text-2xl font-bold">
+					<h2 className="text-center text-3xl font-bold">
 						No more movies
 					</h2>
 				) : (
-					<h2 className="text-centertext-2xl font-bold">Loading...</h2>
+					<h2 className="text-center text-3xl font-bold">Loading...</h2>
 				)}
 			</div>
 
