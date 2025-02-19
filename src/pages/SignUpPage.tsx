@@ -40,7 +40,7 @@ const SignUpPage = () => {
 
 	return (
 		//Fargene endres til slutt
-		<div className="flex flex-col items-center justify-center min-h-screen bg-primary text-white">
+		<div className="flex flex-col items-center justify-center h-full bg-primary text-white">
 			<h1 className="text-4xl font-bold mb-8">Create your Account</h1>
 			<form onSubmit={handleSignUp} className="flex flex-col items-center">
 				<input

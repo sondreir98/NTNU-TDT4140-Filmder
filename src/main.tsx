@@ -13,7 +13,7 @@ const Header = () => {
 	const location = useLocation();
 
 	return (
-		<header className="max-w-md mx-auto h-1/10 flex justify-between items-center p-4">
+		<header className="max-w-md mx-auto h-1/20 flex justify-between items-center p-4">
 			<h1 className="text-xl">Filmder</h1>
 			{!["/login", "/signup"].includes(location.pathname) && (
 				<ProfilePageButton />
@@ -28,7 +28,7 @@ createRoot(
 	<StrictMode>
 		<BrowserRouter>
 			<Header />
-			<main className="max-w-md mx-auto h-8/10 relative">
+			<main className="max-w-md mx-auto h-17/20 relative">
 				<Routes>
 					<Route index element={<Home />} />
 					<Route path="/login" element={<LoginPage />} />
@@ -36,7 +36,7 @@ createRoot(
 					<Route path="/Profile" element={<Profile />} />
 				</Routes>
 			</main>
-			<footer className="max-w-md mx-auto h-1/10">
+			<footer className="max-w-md mx-auto h-2/20">
 				<Navbar />
 			</footer>
 		</BrowserRouter>
