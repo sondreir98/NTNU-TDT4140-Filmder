@@ -3,7 +3,7 @@ import { HomeIcon, SearchIcon, UsersIcon } from "./Icons";
 
 function Navbar() {
 	return (
-		<nav className="fixed bottom-0 w-full bg-white shadow-lg p-10">
+		<nav className="w-full bg-white shadow-lg p-10">
 			<div className="flex justify-around items-center -mx-4">
 				<NavLink
 					to="/Friends"
