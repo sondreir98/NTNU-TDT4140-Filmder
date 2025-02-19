@@ -3,26 +3,26 @@ import {
 	getDislikedMovies,
 	getLikedMovies,
 } from "./DatabaseAccess";
-import type { FilmTest } from "./Movies";
+import type { Film } from "./Movies";
 
 export async function getNotDisplayedMovieByGenreAndYear(
-	genre: string,
+	genre: string | null,
 	year: number | null,
-): Promise<FilmTest | null> {
-	const moviesByGenreAndYear = await getAllMovies([genre], year);
-	console.log("get", moviesByGenreAndYear, year);
+): Promise<Film | null> {
+	const genreList = genre === null ? [] : [genre];
+	const moviesByGenreAndYear = await getAllMovies(genreList, year);
+	const likedMovies = await getLikedMovies();
+	const dislikedMovies = await getDislikedMovies();
 	for (const movie of moviesByGenreAndYear) {
-		const likedMovies = await getLikedMovies();
-		const dislikedMovies = await getDislikedMovies();
 		let isDisplayed = false;
 		for (const likedMovie of likedMovies) {
-			if (likedMovie.name == movie.name) {
+			if (likedMovie.movieId === movie.movieId) {
 				isDisplayed = true;
 				break;
 			}
 		}
 		for (const dislikedMovie of dislikedMovies) {
-			if (dislikedMovie.name == movie.name) {
+			if (dislikedMovie.movieId === movie.movieId) {
 				isDisplayed = true;
 				break;
 			}
@@ -38,12 +38,10 @@ export async function getNotDisplayedMovieByGenreAndYear(
 export async function nextMovie(
 	genres: string[],
 	year: number | null,
-): Promise<FilmTest | null> {
+): Promise<Film | null> {
 	const likedMovies = await getLikedMovies();
 	const dislikedMovies = await getDislikedMovies();
-	const genresLiked: { [key: string]: number } = {};
-	const genresDisliked: { [key: string]: number } = {};
-
+	const genresPopularity: { [key: string]: number } = {};
 	for (const genre of genres) {
 		let numberOfLikedMovies = 0;
 		let numberOfDislikedMovies = 0;
@@ -51,26 +49,25 @@ export async function nextMovie(
 			if (movie.genre.includes(genre)) {
 				numberOfLikedMovies++;
 			}
-			for (const movie of dislikedMovies) {
-				if (movie.genre.includes(genre)) {
-					numberOfDislikedMovies++;
-				}
+		}
+		for (const movie of dislikedMovies) {
+			if (movie.genre.includes(genre)) {
+				numberOfDislikedMovies++;
 			}
-			genresLiked[genre] = numberOfLikedMovies;
-			genresDisliked[genre] = numberOfDislikedMovies;
 		}
+		genresPopularity[genre] = numberOfLikedMovies - numberOfDislikedMovies;
 	}
-	let mostPopularGenre = "";
-	for (const genre of genres) {
-		if (
-			mostPopularGenre == "" ||
-			genresLiked[genre] - genresDisliked[genre] >
-				genresLiked[mostPopularGenre] - genresDisliked[mostPopularGenre]
-		) {
-			mostPopularGenre = genre;
-		}
+	const genreSortedByPopularity = genres.sort((a, b) => {
+		return genresPopularity[b] - genresPopularity[a];
+	});
+	let newMovie = null;
+	let i = 0;
+	while (newMovie === null && i < genres.length) {
+		newMovie = await getNotDisplayedMovieByGenreAndYear(
+			genreSortedByPopularity[i],
+			year,
+		);
+		i++;
 	}
-	console.log("gen", mostPopularGenre);
-
-	return await getNotDisplayedMovieByGenreAndYear(mostPopularGenre, year);
+	return newMovie;
 }
