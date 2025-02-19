@@ -90,7 +90,7 @@ function Home() {
 			<div className="w-full h-full flex bg-gray-200 items-center justify-center">
 				{currentMovie !== null ? (
 					<img
-						className="w-full"
+						className="max-w-full max-h-full"
 						src={currentMovie.logoPath}
 						alt={currentMovie.name}
 					/>
