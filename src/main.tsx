@@ -1,23 +1,33 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Home from "./Home.tsx";
 import Navbar from "./Navbar.tsx";
 import Profile from "./Profile.tsx";
+import ProfilePageButton from "./ProfilePageButton.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
-import ProfilePageButton from "./ProfilePageButton.tsx";
+
+const Header = () => {
+	const location = useLocation();
+
+	return (
+		<header className="max-w-md mx-auto h-1/10 flex justify-between items-center p-4">
+			<h1 className="text-xl">Filmder</h1>
+			{!["/login", "/signup"].includes(location.pathname) && (
+				<ProfilePageButton />
+			)}
+		</header>
+	);
+};
 
 createRoot(
 	document.querySelector(":root > body > #react-root") as HTMLDivElement,
 ).render(
 	<StrictMode>
 		<BrowserRouter>
-			<header className="max-w-md mx-auto h-1/10 flex justify-between items-center p-4">
-				<h1 className="text-xl">Filmder</h1>
-				<ProfilePageButton />
-			</header>
+			<Header />
 			<main className="max-w-md mx-auto h-8/10 relative">
 				<Routes>
 					<Route index element={<Home />} />
