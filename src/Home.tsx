@@ -106,7 +106,7 @@ function Home() {
 			<button
 				onClick={handleFilterToggle}
 				type="button"
-				className="absolute top-5 right-10 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+				className="absolute top-2 right-4 bg-secondary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
 			>
 				<img
 					src="https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline/filter.svg"

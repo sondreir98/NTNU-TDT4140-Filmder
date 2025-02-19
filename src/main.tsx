@@ -7,14 +7,16 @@ import Navbar from "./Navbar.tsx";
 import Profile from "./Profile.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
+import ProfilePageButton from "./ProfilePageButton.tsx";
 
 createRoot(
 	document.querySelector(":root > body > #react-root") as HTMLDivElement,
 ).render(
 	<StrictMode>
 		<BrowserRouter>
-			<header className="max-w-md mx-auto h-1/10">
+			<header className="max-w-md mx-auto h-1/10 flex justify-between items-center p-4">
 				<h1 className="text-xl">Filmder</h1>
+				<ProfilePageButton />
 			</header>
 			<main className="max-w-md mx-auto h-8/10 relative">
 				<Routes>
