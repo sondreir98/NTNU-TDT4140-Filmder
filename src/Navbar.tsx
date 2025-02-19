@@ -13,11 +13,7 @@ function Navbar() {
 					<span className="text-sm">Friends</span>
 				</NavLink>
 				<NavLink
-<<<<<<< HEAD
-					to="/"
-=======
 					to="/Home"
->>>>>>> e9d0e0a7d49fcb82d5cd401074cd7c7b143e1c44
 					className="flex flex-col items-center text-dark hover:text-blue-500"
 				>
 					<HomeIcon />
