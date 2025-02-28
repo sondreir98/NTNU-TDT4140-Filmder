@@ -1,6 +1,6 @@
 import {
 	type DocumentData,
-	type QuerySnapshot,
+	QuerySnapshot,
 	addDoc,
 	and,
 	collection,
@@ -9,6 +9,9 @@ import {
 	getDocs,
 	query,
 	where,
+	startAt,
+	orderBy,
+	limit,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
 import type { Film } from "./Movies";
@@ -30,6 +33,27 @@ function toMovieWithId(movieId: string, data: FilmDatabaseResult): Film {
 		info: data.info,
 		logoPath: data.logoPath,
 	};
+}
+
+export async function getMovieBySearch(movieName: string): Promise<Film[]> {
+	if (auth.currentUser === null) {
+		return [];
+	}
+	let querySnapshot: QuerySnapshot<DocumentData, DocumentData>;
+	querySnapshot = await getDocs(
+		query(collection(db, "films"),
+		orderBy("title"),
+			startAt(movieName),
+		limit(10))
+	);
+	if (querySnapshot.empty) {
+		throw new Error("No films match your search");
+	} else {
+		return querySnapshot.docs.map((doc) => ({
+			id: doc.id,
+			...doc.data() as Film
+		}));
+	}
 }
 
 export async function getLikedMovies(): Promise<Film[]> {
