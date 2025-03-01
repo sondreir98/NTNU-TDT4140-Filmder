@@ -12,6 +12,7 @@ function Home() {
 	const [currentMovie, setCurrentMovie] = useState<Film | null>(null);
 	const [searchInput, setSearchInput] = useState("");
 	const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+	const [noMatch, setNoMatch] = useState<boolean>(false);
 
 	useEffect(() => {
 		updateMovie();
@@ -102,9 +103,14 @@ function Home() {
 	};
 
 	const applySearch = async () => {
-		const movie = await handleMovieSearch(searchInput);
-		setCurrentMovie(movie);
-		setIsSearchOpen(false);
+		try {
+			const movie = await handleMovieSearch(searchInput);
+			setCurrentMovie(movie);
+			setIsSearchOpen(false);
+			setSearchInput("");
+		} catch (error) {
+			setNoMatch(true);
+		}
 	};
 
 	return (
@@ -169,6 +175,11 @@ function Home() {
 						>
 							Apply search
 						</button>
+						{noMatch && (
+							<p className="text-red-500 text-sm mt-2">
+								No movie title matches your search
+							</p>
+						)}
 					</div>
 				</div>
 			)}

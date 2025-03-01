@@ -39,19 +39,20 @@ export async function getMovieBySearch(movieName: string): Promise<Film[]> {
 	if (auth.currentUser === null) {
 		return [];
 	}
-	let querySnapshot: QuerySnapshot<DocumentData, DocumentData>;
-	querySnapshot = await getDocs(
-		query(
-			collection(db, "films"),
-			orderBy("name"),
-			startAt(movieName),
-			limit(10),
-		),
-	);
-	console.log("Databasekall fullført!", querySnapshot)
+	const querySnapshot: QuerySnapshot<DocumentData, DocumentData> =
+		await getDocs(
+			query(
+				collection(db, "films"),
+				orderBy("name"),
+				startAt(movieName),
+				limit(10),
+			),
+		);
 	if (querySnapshot.empty) {
 		throw new Error("No films match your search");
 	}
+
+	console.log("Databasekall fullført!", querySnapshot);
 	return querySnapshot.docs.map((doc) => ({
 		id: doc.id,
 		...(doc.data() as Film),
