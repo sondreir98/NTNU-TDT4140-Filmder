@@ -43,11 +43,12 @@ export async function getMovieBySearch(movieName: string): Promise<Film[]> {
 	querySnapshot = await getDocs(
 		query(
 			collection(db, "films"),
-			orderBy("title"),
+			orderBy("name"),
 			startAt(movieName),
 			limit(10),
 		),
 	);
+	console.log("Databasekall fullført!", querySnapshot)
 	if (querySnapshot.empty) {
 		throw new Error("No films match your search");
 	}
