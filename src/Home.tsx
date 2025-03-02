@@ -100,6 +100,8 @@ function Home() {
 
 	const handleSearchToggle = () => {
 		setIsSearchOpen((prev) => !prev);
+		setNoMatch(false);
+		setSearchInput("");
 	};
 
 	const applySearch = async () => {
@@ -107,7 +109,6 @@ function Home() {
 			const movie = await handleMovieSearch(searchInput);
 			setCurrentMovie(movie);
 			setIsSearchOpen(false);
-			setSearchInput("");
 		} catch (error) {
 			setNoMatch(true);
 		}

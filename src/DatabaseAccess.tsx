@@ -51,12 +51,12 @@ export async function getMovieBySearch(movieName: string): Promise<Film[]> {
 	if (querySnapshot.empty) {
 		throw new Error("No films match your search");
 	}
-
-	console.log("Databasekall fullført!", querySnapshot);
-	return querySnapshot.docs.map((doc) => ({
+	const q = querySnapshot.docs.map((doc) => ({
 		id: doc.id,
-		...(doc.data() as Film),
+		...(doc.data() as Film)
 	}));
+	console.log("Databasekall fullført!", q);
+		return q;
 }
 
 export async function getLikedMovies(): Promise<Film[]> {
