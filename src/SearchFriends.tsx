@@ -51,7 +51,7 @@ const SearchFriends = () => {
 			const friendUsername = friendData?.username || "Unknown User";
 
 			if (currentUserData?.friends?.includes(friendId)) {
-				setError("Already added as friend");
+				setError("Already added as your friend!");
 				return;
 			}
 
@@ -136,7 +136,7 @@ const SearchFriends = () => {
 							<button
 								onClick={() => addFriend(user.id)}
 								type="button"
-								className="ml-4 px-1 py-1 bg-positive text-white rounded-md text-sm hover:bg-green-700 transition"
+								className="ml-4 px-0.5 py-0.5 bg-positive text-white rounded-md text-sm hover:bg-green-700 transition"
 							>
 								<AddFriendIcon />
 							</button>
