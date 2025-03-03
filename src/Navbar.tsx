@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { HomeIcon, SearchIcon, UsersIcon } from "./Icons";
+import { HomeIcon, UsersIcon } from "./Icons";
 
 function Navbar() {
 	return (
@@ -17,13 +17,6 @@ function Navbar() {
 			>
 				<HomeIcon />
 				<span className="text-sm">Home</span>
-			</NavLink>
-			<NavLink
-				to="/Search"
-				className="flex flex-col items-center text-dark hover:text-blue-500"
-			>
-				<SearchIcon />
-				<span className="text-sm">Search</span>
 			</NavLink>
 		</nav>
 	);

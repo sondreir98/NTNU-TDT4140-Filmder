@@ -6,6 +6,7 @@ import Home from "./Home.tsx";
 import Navbar from "./Navbar.tsx";
 import Profile from "./Profile.tsx";
 import ProfilePageButton from "./ProfilePageButton.tsx";
+import SearchFriends from "./SearchFriends.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
 
@@ -34,6 +35,7 @@ createRoot(
 					<Route path="/login" element={<LoginPage />} />
 					<Route path="/signup" element={<SignUpPage />} />
 					<Route path="/Profile" element={<Profile />} />
+					<Route path="/SearchFriends" element={<SearchFriends />} />
 				</Routes>
 			</main>
 			<footer className="max-w-md mx-auto h-2/20">
