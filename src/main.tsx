@@ -8,6 +8,7 @@ import Profile from "./Profile.tsx";
 import ProfilePageButton from "./ProfilePageButton.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
+import Friends from "./Friends.tsx";
 
 const Header = () => {
 	const location = useLocation();
@@ -34,6 +35,7 @@ createRoot(
 					<Route path="/login" element={<LoginPage />} />
 					<Route path="/signup" element={<SignUpPage />} />
 					<Route path="/Profile" element={<Profile />} />
+					<Route path="/Friends" element={<Friends />} />
 				</Routes>
 			</main>
 			<footer className="max-w-md mx-auto h-2/20">
