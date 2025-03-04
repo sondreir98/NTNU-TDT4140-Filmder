@@ -92,11 +92,14 @@ function Home() {
 		setSearchInput(event.target.value);
 	};
 
-	const handleMovieSearch = async (movieName: string): Promise<Film> => {
-		const movies = await getMovieBySearch(movieName);
-		const movie = movies[0];
-		return movie;
-	};
+	const handleMovieSearch = useCallback(
+		async (movieName: string): Promise<Film> => {
+			const movies = await getMovieBySearch(movieName);
+			const movie = movies[0];
+			return movie;
+		},
+		[],
+	);
 
 	const handleSearchToggle = () => {
 		setIsSearchOpen((prev) => !prev);
@@ -104,20 +107,23 @@ function Home() {
 		setSearchInput("");
 	};
 
-	const applySearch = async () => {
-		try {
-			const movie = await handleMovieSearch(searchInput);
-			setCurrentMovie(movie);
-			setIsSearchOpen(false);
-		} catch (error) {
-			setNoMatch(true);
-		}
-	};
+	const applySearch = useCallback(() => {
+		(async () => {
+			try {
+				const movie = await handleMovieSearch(searchInput);
+				console.log("movie", movie);
+				setCurrentMovie(movie);
+				setIsSearchOpen(false);
+			} catch (error) {
+				setNoMatch(true);
+			}
+		})();
+	}, [searchInput, handleMovieSearch]);
 
 	return (
 		<>
 			<div className="w-full h-full flex bg-gray-200 items-center justify-center">
-				{currentMovie !== null ? (
+				{currentMovie !== null && currentMovie !== undefined ? (
 					<img
 						className="max-w-full max-h-full"
 						src={currentMovie.logoPath}

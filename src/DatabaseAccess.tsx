@@ -7,10 +7,7 @@ import {
 	doc,
 	getDoc,
 	getDocs,
-	limit,
-	orderBy,
 	query,
-	startAt,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
@@ -37,26 +34,23 @@ function toMovieWithId(movieId: string, data: FilmDatabaseResult): Film {
 
 export async function getMovieBySearch(movieName: string): Promise<Film[]> {
 	if (auth.currentUser === null) {
+		console.log("user: ", auth.currentUser);
 		return [];
 	}
-	const querySnapshot: QuerySnapshot<DocumentData, DocumentData> =
-		await getDocs(
-			query(
-				collection(db, "films"),
-				orderBy("name"),
-				startAt(movieName),
-				limit(10),
-			),
-		);
-	if (querySnapshot.empty) {
+
+	const movies = await getAllMovies();
+
+	console.log("Searching for:", movieName.toLowerCase());
+
+	const filteredMovies: Film[] = movies.filter((movie) =>
+		movie.name.toLowerCase().includes(movieName.toLowerCase()),
+	);
+	console.log("liste blir laget!", filteredMovies);
+
+	if (filteredMovies.length === 0) {
 		throw new Error("No films match your search");
 	}
-	const q = querySnapshot.docs.map((doc) => ({
-		id: doc.id,
-		...(doc.data() as Film)
-	}));
-	console.log("Databasekall fullført!", q);
-		return q;
+	return filteredMovies;
 }
 
 export async function getLikedMovies(): Promise<Film[]> {
