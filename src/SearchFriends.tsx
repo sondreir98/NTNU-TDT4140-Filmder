@@ -51,7 +51,7 @@ const SearchFriends = () => {
 			const friendUsername = friendData?.username || "Unknown User";
 
 			if (currentUserData?.friends?.includes(friendId)) {
-				setError("Already added as your friend!");
+				setError(`${friendUsername} is already your friend!`);
 				return;
 			}
 
