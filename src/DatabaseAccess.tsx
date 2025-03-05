@@ -4,10 +4,12 @@ import {
 	addDoc,
 	and,
 	collection,
+	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
 	query,
+	updateDoc,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
@@ -144,4 +146,52 @@ export async function dislikeMovie(movieId: string) {
 		film: movieId,
 		user: auth.currentUser.uid,
 	});
+}
+
+export async function addAvatar(avatarId: string) {
+	if (auth.currentUser === null) {
+		throw new Error("You need to be logged in to set an avatar.");
+	}
+
+	const userId = auth.currentUser.uid;
+	const avatarDocRef = collection(db, "avatars", avatarId);
+	const avatarDocSnap = await getDocs(avatarDocRef);
+
+	if (!avatarDocSnap.empty) {
+		throw new Error("Selected avatar does not exist.");
+	}
+
+	const userAvatarRef = collection(db, "avatars");
+	const existingAvatarQuery = query(userAvatarRef, where("user", "==", userId));
+	const existingAvatarSnapshot = await getDocs(existingAvatarQuery);
+
+	for (const avatarRelation of existingAvatarSnapshot.docs) {
+		await deleteDoc(doc(db, "avatars", avatarRelation.id));
+	}
+
+	await addDoc(userAvatarRef, {
+		user: userId,
+		avatar: avatarId,
+	});
+}
+
+export async function getAvatar(): Promise<string | null> {
+	if (auth.currentUser === null) {
+		return null;
+	}
+
+	const avatarQuery = query(
+		collection(db, "avatars"),
+		where("user", "==", auth.currentUser.uid)
+	);
+
+	const avatarSnapshot = await getDocs(avatarQuery);
+
+	if (avatarSnapshot.empty){
+		return null;
+	}
+
+	const avatarDoc = avatarSnapshot.docs[0]; //Fordi vi lagrer ting litt dårlig?
+	return avatarDoc.get("avatarPath");
+
 }
