@@ -9,11 +9,12 @@ import {
 	getDoc,
 	getDocs,
 	query,
+	setDoc,
 	updateDoc,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
-import type { Film } from "./Movies";
+import type { Film, User } from "./Movies";
 
 type FilmDatabaseResult = {
 	name: string;
@@ -148,50 +149,28 @@ export async function dislikeMovie(movieId: string) {
 	});
 }
 
-export async function addAvatar(avatarId: string) {
+export async function setAvatar(avatarPath: string) {
 	if (auth.currentUser === null) {
 		throw new Error("You need to be logged in to set an avatar.");
 	}
 
 	const userId = auth.currentUser.uid;
-	const avatarDocRef = collection(db, "avatars", avatarId);
-	const avatarDocSnap = await getDocs(avatarDocRef);
 
-	if (!avatarDocSnap.empty) {
-		throw new Error("Selected avatar does not exist.");
-	}
+	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
+	userRef.avatarPath = avatarPath;
 
-	const userAvatarRef = collection(db, "avatars");
-	const existingAvatarQuery = query(userAvatarRef, where("user", "==", userId));
-	const existingAvatarSnapshot = await getDocs(existingAvatarQuery);
-
-	for (const avatarRelation of existingAvatarSnapshot.docs) {
-		await deleteDoc(doc(db, "avatars", avatarRelation.id));
-	}
-
-	await addDoc(userAvatarRef, {
-		user: userId,
-		avatar: avatarId,
-	});
+	await setDoc(doc(db, "users", userId),
+		userRef
+	);
 }
 
-export async function getAvatar(): Promise<string | null> {
+export async function getUser(): Promise<User | null> {
 	if (auth.currentUser === null) {
 		return null;
 	}
 
-	const avatarQuery = query(
-		collection(db, "avatars"),
-		where("user", "==", auth.currentUser.uid)
-	);
+	const userId = auth.currentUser.uid;
+	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
 
-	const avatarSnapshot = await getDocs(avatarQuery);
-
-	if (avatarSnapshot.empty){
-		return null;
-	}
-
-	const avatarDoc = avatarSnapshot.docs[0]; //Fordi vi lagrer ting litt dårlig?
-	return avatarDoc.get("avatarPath");
-
+	return userRef;
 }

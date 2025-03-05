@@ -1,49 +1,61 @@
 import { useEffect, useState } from "react";
 import { auth } from "./Database";
-import { getDislikedMovies, getLikedMovies, addAvatar, getAvatar } from "./DatabaseAccess";
+import {
+	getDislikedMovies,
+	getLikedMovies,
+	getUser,
+	setAvatar,
+} from "./DatabaseAccess";
 import type { Film } from "./Movies";
 import { getRandomMovie } from "./RandomMovie";
-
-
 
 function Profile() {
 	const [selectedCategory, setSelectedCategory] = useState("liked");
 	const [likedMovies, setLikedMovies] = useState<Film[]>([]);
 	const [dislikedMovies, setDislikedMovies] = useState<Film[]>([]);
 	const [user, setUser] = useState(null);
-  const [userAvatar, setUserAvatar] = useState<string | null>(null);
-	
+	const [userAvatar, setUserAvatar] = useState<string | null>(null);
+	const [isAvatarPopupOpen, setIsAvatarPopupOpen] = useState(false);
+
+	const presetAvatars = [
+		"/avatars/avatar1.jpg",
+		"/avatars/avatar2.jpg",
+		"/avatars/avatar3.jpg",
+		"/avatars/avatar4.jpg",
+		"/avatars/avatar5.jpg",
+		"/avatars/avatar6.jpg",
+	];
 
 	// Henter filmer fra db
 	useEffect(() => {
 		async function fetchMovies() {
+			const user = await getUser();
+			const avatar = user?.avatarPath;
+			const disliked = await getDislikedMovies();
 			const liked = await getLikedMovies();
 			console.log("Fetched liked movies:", liked);
 			console.log("User is:", auth.currentUser);
-      const avatar = await getAvatar();
-			const disliked = await getDislikedMovies();
+
 			setLikedMovies(liked);
 			setDislikedMovies(disliked);
-      setUserAvatar(avatar || "https://images.desenio.com/zoom/18823_1.jpg");
+			setUserAvatar(avatar ?? "https://images.desenio.com/zoom/18823_1.jpg");
 		}
 		fetchMovies();
 	}, []);
 
-  //uferdig
+	//uferdig
 	async function showRandomMovie() {
 		const movie = await getRandomMovie();
-		console.log(movie ? `Random Movie: ${movie.name}` : "No liked movies found!");
+		console.log(
+			movie ? `Random Movie: ${movie.name}` : "No liked movies found!",
+		);
 	}
 
-  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (!event.target.files || event.target.files.length === 0) return;
-
-		const file = event.target.files[0];
-		const avatarPath = `.../avatars/${file.name}`;
-
+	const handleAvatarSelect = async (avatarPath: string) => {
 		try {
-			await addAvatar(avatarPath);
-			setUserAvatar(avatarPath); 
+			await setAvatar(avatarPath);
+			setUserAvatar(avatarPath);
+			setIsAvatarPopupOpen(false); // Lukker popup
 		} catch (error) {
 			console.error("Failed to update avatar:", error);
 		}
@@ -64,60 +76,97 @@ function Profile() {
 				/>
 			)}
 
-			
-			<div className="mt-60">
-				<label className="cursor-pointer bg-blue-500 text-white p-2 rounded-lg">
-					Upload Avatar
-					<input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-				</label>
-			</div>
+			<button
+				type="button"
+				onClick={() => setIsAvatarPopupOpen(true)}
+				className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
+			>
+				Change Avatar
+			</button>
 
+			{isAvatarPopupOpen && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+					<div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
+						<h2 className="text-lg font-semibold mb-4">Select an Avatar</h2>
 
-			<p className="mt-2 text-lg font-semibold">{auth.currentUser?.displayName || "Username"}</p>
+						<div className="grid grid-cols-3 gap-4">
+							{presetAvatars.map((avatar) => (
+								<button
+									key={avatar}
+									type="button"
+									className="w-16 h-16 rounded-full border-2 border-gray-300 hover:opacity-75 focus:ring-2 focus:ring-blue-500"
+									onClick={() => handleAvatarSelect(avatar)}
+								>
+									<img
+										src={avatar}
+										alt="Avatar option"
+										className="w-full h-full rounded-full"
+									/>
+								</button>
+							))}
+						</div>
 
-			<p className="text-gray-600">{auth.currentUser?.email || "email@example.com"}</p>
+						<button
+							type="button"
+							onClick={() => setIsAvatarPopupOpen(false)}
+							className="mt-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-400"
+						>
+							Close
+						</button>
+					</div>
+				</div>
+			)}
+
+			<p className="mt-2 text-lg font-semibold">
+				{auth.currentUser?.displayName || "Username"}
+			</p>
+
+			<p className="text-gray-600">
+				{auth.currentUser?.email || "email@example.com"}
+			</p>
 
 			<div className="w-full max-w-lg bg-white p-4 rounded-lg shadow-lg mb-3 mt-3">
-  <label
-    htmlFor="movieFilter"
-    className="text-lg font-semibold text-gray-700 mb-2 block"
-  >
-    Show:
-  </label>
-  <select
-    id="movieFilter"
-    className="w-full p-2 border rounded-lg bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    value={selectedCategory}
-    onChange={(e) => setSelectedCategory(e.target.value)}
-  >
-    <option value="liked">Liked Movies</option>
-    <option value="disliked">Disliked Movies</option>
-  </select>
+				<label
+					htmlFor="movieFilter"
+					className="text-lg font-semibold text-gray-700 mb-2 block"
+				>
+					Show:
+				</label>
+				<select
+					id="movieFilter"
+					className="w-full p-2 border rounded-lg bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					value={selectedCategory}
+					onChange={(e) => setSelectedCategory(e.target.value)}
+				>
+					<option value="liked">Liked Movies</option>
+					<option value="disliked">Disliked Movies</option>
+				</select>
 
-  <div className="h-auto mt-4 max-h-48 overflow-y-auto p-2 border border-gray-300 rounded-lg bg-gray-50">
-    {moviesToShow.length > 0 ? (
-      <ul className="space-y-4">
-        {moviesToShow.map((movie) => (
-          <li
-            key={movie.name}
-            className="p-4 rounded-lg border border-gray-200 shadow-sm bg-white"
-          >
-            <p className="text-xl font-semibold text-gray-800">{movie.name}</p>
-            <p className="text-sm text-gray-600">{movie.year}</p>
-            <p className="text-gray-500 mt-2">{movie.info}</p>
-            <p className="text-sm text-gray-400 mt-2">
-              {movie.genre.join(", ")}
-            </p>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p className="text-gray-500 text-center">No movies found</p>
-    )}
-  </div>
-</div>
-
-</div>
+				<div className="h-auto mt-4 max-h-48 overflow-y-auto p-2 border border-gray-300 rounded-lg bg-gray-50">
+					{moviesToShow.length > 0 ? (
+						<ul className="space-y-4">
+							{moviesToShow.map((movie) => (
+								<li
+									key={movie.name}
+									className="p-4 rounded-lg border border-gray-200 shadow-sm bg-white"
+								>
+									<p className="text-xl font-semibold text-gray-800">
+										{movie.name}
+									</p>
+									<p className="text-sm text-gray-600">{movie.year}</p>
+									<p className="text-gray-500 mt-2">{movie.info}</p>
+									<p className="text-sm text-gray-400 mt-2">
+										{movie.genre.join(", ")}
+									</p>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p className="text-gray-500 text-center">No movies found</p>
+					)}
+				</div>
+			</div>
+		</div>
 	);
 }
 
