@@ -17,6 +17,9 @@ function Profile() {
 	// Henter filmer fra db
 	useEffect(() => {
 		async function fetchMovies() {
+			const user = await getUser();
+			const avatar = user?.avatarPath;
+			const disliked = await getDislikedMovies();
 			const liked = await getLikedMovies();
 			console.log("Fetched liked movies:", liked);
 			console.log("User is:", auth.currentUser);
@@ -56,15 +59,24 @@ function Profile() {
 		<div className="relative h-full bg-gray-100 p-4 flex flex-col items-center">
 			<h1 className="absolute top-4 text-xl font-bold">Profile Page</h1>
 
-			<img
-				src="https://images.desenio.com/zoom/18823_1.jpg"
-				alt="Profile"
-				className="w-40 h-40 rounded-full mt-16 border-4 border-gray-500"
-			/>
+			{userAvatar && (
+				<img
+					src={userAvatar}
+					alt="Profile"
+					className="w-30 h-30 rounded-full mt-9 border-4 border-gray-500"
+				/>
+			)}
 
-			<p className="mt-2 text-lg font-semibold">
-				{auth.currentUser?.displayName || "Username"}
-			</p>
+			
+			<div className="mt-60">
+				<label className="cursor-pointer bg-blue-500 text-white p-2 rounded-lg">
+					Upload Avatar
+					<input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+				</label>
+			</div>
+
+
+			<p className="mt-2 text-lg font-semibold">{auth.currentUser?.displayName || "Username"}</p>
 
 			<p className="text-gray-600">
 				{auth.currentUser?.email || "email@example.com"}
