@@ -287,6 +287,8 @@ function Home() {
 						{currentMovie.name}
 					</h2>
 					<p className="text-center">{currentMovie.info}</p>
+					<br/>
+					<p className="text-center">Release year: {currentMovie.year}</p>
 					<button
 						onClick={() => setOpenInfo(false)}
 						type="button"
