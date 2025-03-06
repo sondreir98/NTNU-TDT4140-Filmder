@@ -16,6 +16,7 @@ function Profile() {
 	const [user, setUser] = useState(null);
 	const [userAvatar, setUserAvatar] = useState<string | null>(null);
 	const [isAvatarPopupOpen, setIsAvatarPopupOpen] = useState(false);
+	const [randomMovie, setRandomMovie] = useState<Film | null>(null);
 
 	const presetAvatars = [
 		"/avatars/avatar1.jpg",
@@ -46,10 +47,16 @@ function Profile() {
 	//uferdig
 	async function showRandomMovie() {
 		const movie = await getRandomMovie();
-		console.log(
-			movie ? `Random Movie: ${movie.name}` : "No liked movies found!",
-		);
+		if (movie) {
+			setRandomMovie(movie);
+		} else {
+			alert("No liked movies found!");
+		}
 	}
+
+	const closeRandomMoviePopup = () => {
+		setRandomMovie(null);
+	};
 
 	const handleAvatarSelect = async (avatarPath: string) => {
 		try {
@@ -65,27 +72,25 @@ function Profile() {
 		selectedCategory === "liked" ? likedMovies : dislikedMovies;
 
 	return (
-		<div className="relative h-full bg-gray-100 p-4 flex flex-col items-center">
-			<h1 className="absolute top-4 text-xl font-bold">Profile Page</h1>
-
+		<div className="bg-gray-100 p-4 flex flex-col items-center">
 			{userAvatar && (
 				<img
 					src={userAvatar}
 					alt="Profile"
-					className="w-30 h-30 rounded-full mt-9 border-4 border-gray-500"
+					className="w-30 h-30 rounded-full border-4 border-gray-500"
 				/>
 			)}
 
 			<button
 				type="button"
 				onClick={() => setIsAvatarPopupOpen(true)}
-				className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
+				className="mt-4 bg-primary text-white px-4 py-2 rounded-lg"
 			>
 				Change Avatar
 			</button>
 
 			{isAvatarPopupOpen && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+				<div className="fixed inset-0 bg-primary bg-opacity-50 flex justify-center items-center">
 					<div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
 						<h2 className="text-lg font-semibold mb-4">Select an Avatar</h2>
 
@@ -109,7 +114,7 @@ function Profile() {
 						<button
 							type="button"
 							onClick={() => setIsAvatarPopupOpen(false)}
-							className="mt-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-400"
+							className="mt-4 bg-primary text-white px-3 py-1 rounded"
 						>
 							Close
 						</button>
@@ -125,16 +130,16 @@ function Profile() {
 				{auth.currentUser?.email || "email@example.com"}
 			</p>
 
-			<div className="w-full max-w-lg bg-white p-4 rounded-lg shadow-lg mb-3 mt-3">
+			<div className="w-full max-w-lg bg-white p-4 rounded-lg shadow-lg mb-1 mt-3 flex-col">
 				<label
 					htmlFor="movieFilter"
-					className="text-lg font-semibold text-gray-700 mb-2 block"
+					className="font-semibold text-gray-700 mb-2 block"
 				>
 					Show:
 				</label>
 				<select
 					id="movieFilter"
-					className="w-full p-2 border rounded-lg bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					className="w-34 p-1.5 mr-2 border rounded-lg bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
 					value={selectedCategory}
 					onChange={(e) => setSelectedCategory(e.target.value)}
 				>
@@ -142,7 +147,35 @@ function Profile() {
 					<option value="disliked">Disliked Movies</option>
 				</select>
 
-				<div className="h-auto mt-4 max-h-48 overflow-y-auto p-2 border border-gray-300 rounded-lg bg-gray-50">
+				<button
+					type="button"
+					onClick={() => showRandomMovie()}
+					className="bg-primary text-white px-4 py-2 rounded-lg text-sm"
+				>
+					Random Liked Movie!
+				</button>
+
+				{randomMovie && (
+					<div className="fixed inset-0 bg-primary bg-opacity-50 flex justify-center items-center">
+						<div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+							<h2 className="text-xl font-bold mb-2">{randomMovie.name}</h2>
+							<p className="text-sm text-gray-600">{randomMovie.year}</p>
+							<p className="text-gray-500 mt-2">{randomMovie.info}</p>
+							<p className="text-sm text-gray-400 mt-2">
+								{randomMovie.genre.join(", ")}
+							</p>
+							<button
+								type="button"
+								onClick={closeRandomMoviePopup}
+								className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg"
+							>
+								Close
+							</button>
+						</div>
+					</div>
+				)}
+
+				<div className="h-42 flex-grow min-h-0 mt-2 overflow-y-auto p-2 border border-gray-300 rounded-lg bg-gray-50">
 					{moviesToShow.length > 0 ? (
 						<ul className="space-y-4">
 							{moviesToShow.map((movie) => (
@@ -150,7 +183,7 @@ function Profile() {
 									key={movie.name}
 									className="p-4 rounded-lg border border-gray-200 shadow-sm bg-white"
 								>
-									<p className="text-xl font-semibold text-gray-800">
+									<p className="text-l font-semibold text-gray-800">
 										{movie.name}
 									</p>
 									<p className="text-sm text-gray-600">{movie.year}</p>
