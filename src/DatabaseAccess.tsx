@@ -159,9 +159,7 @@ export async function setAvatar(avatarPath: string) {
 	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
 	userRef.avatarPath = avatarPath;
 
-	await setDoc(doc(db, "users", userId),
-		userRef
-	);
+	await setDoc(doc(db, "users", userId), userRef);
 }
 
 export async function getUser(): Promise<User | null> {
