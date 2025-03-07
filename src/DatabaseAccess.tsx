@@ -4,14 +4,17 @@ import {
 	addDoc,
 	and,
 	collection,
+	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
 	query,
+	setDoc,
+	updateDoc,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
-import type { Film } from "./Movies";
+import type { Film, User } from "./Movies";
 
 type FilmDatabaseResult = {
 	name: string;
@@ -144,4 +147,28 @@ export async function dislikeMovie(movieId: string) {
 		film: movieId,
 		user: auth.currentUser.uid,
 	});
+}
+
+export async function setAvatar(avatarPath: string) {
+	if (auth.currentUser === null) {
+		throw new Error("You need to be logged in to set an avatar.");
+	}
+
+	const userId = auth.currentUser.uid;
+
+	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
+	userRef.avatarPath = avatarPath;
+
+	await setDoc(doc(db, "users", userId), userRef);
+}
+
+export async function getUser(): Promise<User | null> {
+	if (auth.currentUser === null) {
+		return null;
+	}
+
+	const userId = auth.currentUser.uid;
+	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
+
+	return userRef;
 }

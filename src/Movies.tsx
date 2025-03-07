@@ -6,3 +6,8 @@ export type Film = {
 	info: string;
 	logoPath: string;
 };
+
+export type User = {
+	avatarPath: string;
+	friends: string[];
+};
