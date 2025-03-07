@@ -9,6 +9,7 @@ function Home() {
 	const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 	const [selectedGenres, setSelectedGenres] = useState<string[]>(genres);
 	const [selectedYear, setSelectedYear] = useState<number | null>(null);
+	const [wantsPopular, setWantsPopular] = useState<boolean>(false);
 	const [currentMovie, setCurrentMovie] = useState<Film | null>(null);
 
 	useEffect(() => {
@@ -18,7 +19,7 @@ function Home() {
 	const updateMovie = useCallback(() => {
 		async function ineractWithDatabase() {
 			setCurrentMovie(null);
-			const newMovie = await nextMovie(selectedGenres, selectedYear);
+			const newMovie = await nextMovie(selectedGenres, selectedYear, wantsPopular);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
 				setNoMoreMovies(true);
@@ -27,7 +28,7 @@ function Home() {
 			}
 		}
 		ineractWithDatabase();
-	}, [selectedGenres, selectedYear]);
+	}, [selectedGenres, selectedYear, wantsPopular]);
 
 	const handleLike = useCallback(() => {
 		async function ineractWithDatabase() {
@@ -35,7 +36,7 @@ function Home() {
 				await likeMovie(currentMovie.movieId);
 			}
 			setCurrentMovie(null);
-			const newMovie = await nextMovie(selectedGenres, selectedYear);
+			const newMovie = await nextMovie(selectedGenres, selectedYear, wantsPopular);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
 				setNoMoreMovies(true);
@@ -44,7 +45,7 @@ function Home() {
 			}
 		}
 		ineractWithDatabase();
-	}, [currentMovie, selectedGenres, selectedYear]);
+	}, [currentMovie, selectedGenres, selectedYear, wantsPopular]);
 
 	const handleDislike = useCallback(() => {
 		async function ineractWithDatabase() {
@@ -52,7 +53,7 @@ function Home() {
 				await dislikeMovie(currentMovie.movieId);
 			}
 			setCurrentMovie(null);
-			const newMovie = await nextMovie(selectedGenres, selectedYear);
+			const newMovie = await nextMovie(selectedGenres, selectedYear, wantsPopular);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
 				setNoMoreMovies(true);
@@ -61,7 +62,7 @@ function Home() {
 			}
 		}
 		ineractWithDatabase();
-	}, [currentMovie, selectedGenres, selectedYear]);
+	}, [currentMovie, selectedGenres, selectedYear, wantsPopular]);
 
 	//C: Kode lagt til for filtrering (linje 69-94)
 	const handleFilterToggle = () => {
@@ -79,6 +80,9 @@ function Home() {
 		}
 		setSelectedYear(year);
 	};
+	const handlePopularityChange = () => {
+		setWantsPopular((prev) => !prev);
+	}
 	const applyFilter = () => {
 		setCurrentMovie(null);
 		updateMovie();
@@ -161,6 +165,10 @@ function Home() {
 								min="1960"
 								max="2025"
 							/>
+						</div>
+						<div className="mb-4">
+							<label htmlFor="popularityInput">See only popular movies: </label>
+							<input id="popularityInput" type="checkbox" checked={wantsPopular} onChange={handlePopularityChange} className="mr-2"></input>
 						</div>
 
 						<button

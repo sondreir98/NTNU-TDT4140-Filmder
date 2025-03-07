@@ -4,13 +4,12 @@ import {
 	addDoc,
 	and,
 	collection,
-	deleteDoc,
 	doc,
+	getCountFromServer,
 	getDoc,
 	getDocs,
 	query,
 	setDoc,
-	updateDoc,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
@@ -81,9 +80,11 @@ export async function getDislikedMovies(): Promise<Film[]> {
 	}
 	return unpackedFilms;
 }
+const POPULARITY_FRACTION = 1 / 20;
 export async function getAllMovies(
 	genreFilter: string[] = [],
 	yearFilter: number | null = null,
+	popularityFilter: boolean = false,
 ): Promise<Film[]> {
 	const rawMovies: Film[] = [];
 	const movieIds = new Set<string>();
@@ -127,8 +128,22 @@ export async function getAllMovies(
 			);
 		}
 	}
-
-	return rawMovies;
+	const popularMovies = [];
+	if (popularityFilter) {
+		const totalCount = (await getCountFromServer(query(collection(db, "userLikedFilms")))).data().count;
+		for (const movie of rawMovies) {
+			const coll = collection(db, "userLikedFilms");
+			const q = query(coll, where("film", "==", movie.movieId));
+			const aggregate = await getCountFromServer(q);
+			const count = aggregate.data().count;
+			if (count / totalCount >= POPULARITY_FRACTION) {
+				popularMovies.push(movie);
+			}
+		}
+		return popularMovies;
+	} else {
+		return rawMovies;
+	}
 }
 export async function likeMovie(movieId: string) {
 	if (auth.currentUser === null) {
