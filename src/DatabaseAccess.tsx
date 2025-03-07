@@ -58,6 +58,26 @@ export async function getLikedMovies(): Promise<Film[]> {
 	}
 	return unpackedFilms;
 }
+export async function getUsersLikedMovies(uid: string): Promise<Film[]> {
+    const allUserLikedRelations = await getDocs(
+        query(
+            collection(db, "userLikedFilms"),
+            where("user", "==", uid),
+        ),
+    );
+    const unpackedFilms: Film[] = [];
+    for (const relation of allUserLikedRelations.docs) {
+        const filmId = relation.get("film");
+        const film = await getDoc(doc(db, "films", filmId));
+        if (!film.data()) {
+            throw new Error("userLikedFilms has wrong formatted entries.");
+        }
+        unpackedFilms.push(
+            toMovieWithId(filmId, film.data() as FilmDatabaseResult),
+        );
+    }
+    return unpackedFilms;
+}
 export async function getDislikedMovies(): Promise<Film[]> {
 	if (auth.currentUser === null) {
 		return [];
