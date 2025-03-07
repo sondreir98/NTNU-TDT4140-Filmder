@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { db } from "./Database";
 import { AddFriendIcon, ArrowLeftIcon } from "./Icons";
 
+//Start: kode utviklet med hjelp av KI
 const SearchFriends = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [searchResults, setSearchResults] = useState<
@@ -68,6 +69,7 @@ const SearchFriends = () => {
 			setError("An error occurred while adding the friend.");
 		}
 	};
+	//Slutt: kode utviklet med hjelp av KI
 
 	const handleSearch = async () => {
 		setSuccessMessage(null);
@@ -105,7 +107,6 @@ const SearchFriends = () => {
 	return (
 		<div className="flex flex-col mt-4 ml-4">
 			<h2 className="text-2xl font-semibold mb-6 ml-2">Search for friends</h2>
-
 			<div className="flex gap-2 mb-6">
 				<input
 					type="text"
