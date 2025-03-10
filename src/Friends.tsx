@@ -1,6 +1,6 @@
 import type { Film } from "./Movies";
-import { nextMovie } from "./Algoritme";
 import { useState } from "react";
+import {getSortedLikedMoviesAmongFriends} from "./TopFive"
 
 type Friend = {
     id: number;
@@ -18,13 +18,9 @@ type Friend = {
     { id: 7, name: "Charlie Brown", avatar: "https://i.pravatar.cc/100?u=charlie" },
   ];
 
-const movies: (Film|null)[] = [];
+const moviesAll: (Film|null)[] = await getSortedLikedMoviesAmongFriends();
 
-movies.push(await nextMovie(["drama"],null));
-movies.push(await nextMovie(["action"],null));
-movies.push(await nextMovie(["comedy"],null));
-movies.push(await nextMovie(["romance"],null));
-movies.push(await nextMovie(["sci-fi"],null));
+const movies: (Film|null)[] = moviesAll.slice();
 
 function Friends() {
   const [selectedMovie, setSelectedMovie] = useState<Film | null>(null);

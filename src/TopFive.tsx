@@ -1,7 +1,7 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { auth, db } from "./Database";
-import { Film } from "./Movies";
+import type { Film } from "./Movies";
 import { getUsersLikedMovies } from "./DatabaseAccess";
 
 type User = {
@@ -51,7 +51,7 @@ async function getCurrentUsersFriendsLikedMovies(): Promise<Record<string, numbe
     }
     return likedMoviesMap;
 }
-async function getSortedLikedMoviesAmongFriends(): Promise<Film[]> {
+export async function getSortedLikedMoviesAmongFriends(): Promise<Film[]> {
     const likedMoviesMap = await getCurrentUsersFriendsLikedMovies();
     const movieIds = Object.keys(likedMoviesMap);
     const movies = await getMoviesWithIds(movieIds);
@@ -59,28 +59,28 @@ async function getSortedLikedMoviesAmongFriends(): Promise<Film[]> {
     return movies;
 }
 
-export function TopFive() {
-    const [topMoviesAmongFriends, setTopMoviesAmongFriends] = useState<Film[]>();
-    useEffect(() => {
-        updateTopMovies();
-    }, [])
-    const updateTopMovies = useCallback(() => {
-        (async () => {
-            const movies = await getSortedLikedMoviesAmongFriends();
-            setTopMoviesAmongFriends(movies.slice(0, 5));
-        })();
-    }, [topMoviesAmongFriends]);
+// export function TopFive() {
+//     const [topMoviesAmongFriends, setTopMoviesAmongFriends] = useState<Film[]>();
+//     useEffect(() => {
+//         updateTopMovies();
+//     }, [])
+//     const updateTopMovies = useCallback(() => {
+//         (async () => {
+//             const movies = await getSortedLikedMoviesAmongFriends();
+//             setTopMoviesAmongFriends(movies.slice(0, 5));
+//         })();
+//     }, [topMoviesAmongFriends]);
 
-    return <>
-        <article className="h-1/2 w-full">
-            <h2>Top Five Movies Among Friends:</h2>
-            <div className="h-full flex justify-start overflow-scroll">
-                {topMoviesAmongFriends === undefined || topMoviesAmongFriends.length === 0 ? <h1>No movies here...</h1> : topMoviesAmongFriends.map(movie => {
-                    return <figure className="relative h-full flex-none">
-                        <img className="h-full" src={movie.logoPath} alt={movie.name + " logo"} />
-                    </figure>;
-                })}
-            </div>
-        </article>
-    </>;
-}
+//     return <>
+//         <article className="h-1/2 w-full">
+//             <h2>Top Five Movies Among Friends:</h2>
+//             <div className="h-full flex justify-start overflow-scroll">
+//                 {topMoviesAmongFriends === undefined || topMoviesAmongFriends.length === 0 ? <h1>No movies here...</h1> : topMoviesAmongFriends.map(movie => {
+//                     return <figure className="relative h-full flex-none">
+//                         <img className="h-full" src={movie.logoPath} alt={movie.name + " logo"} />
+//                     </figure>;
+//                 })}
+//             </div>
+//         </article>
+//     </>;
+// }
