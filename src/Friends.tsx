@@ -1,6 +1,8 @@
 import type { Film } from "./Movies";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {getSortedLikedMoviesAmongFriends} from "./TopFive"
+import { collection, onSnapshot } from "firebase/firestore";
+import { auth, db } from "./Database";
 
 type Friend = {
     id: number;
@@ -18,12 +20,21 @@ type Friend = {
     { id: 7, name: "Charlie Brown", avatar: "https://i.pravatar.cc/100?u=charlie" },
   ];
 
-const moviesAll: (Film|null)[] = await getSortedLikedMoviesAmongFriends();
 
-const movies: (Film|null)[] = moviesAll.slice();
 
-function Friends() {
+ function Friends() {
+  const [movies, setMovies] = useState<Film[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Film | null>(null);
+
+  useEffect(() => {
+    async function fetchMovies() {
+      const moviesAll = await getSortedLikedMoviesAmongFriends();
+      console.log(moviesAll)
+      setMovies(moviesAll.slice(0, 5));
+    }
+    fetchMovies();
+  }, []);
+
   const handleInfoToggle = (movie : Film) => {
 		setSelectedMovie((prev) => (prev && prev.movieId === movie.movieId ? null : movie));
 
@@ -35,8 +46,8 @@ function Friends() {
           <h2 className="text-2xl font-bold mb-1">Friend's Top Choices</h2>
           <div className="overflow-x-auto whitespace-nowrap">
               <div className="flex space-x-6">
-                  {movies.map((movie) => (
-                      movie ? (
+              {movies.length > 0 ? (
+                  movies.map((movie) => (
                           <div key={movie.movieId} className="w-32 flex-shrink-0 relative m-0 p-0">
                             <button
                               onClick={() => handleInfoToggle(movie)}
@@ -46,10 +57,14 @@ function Friends() {
                               ℹ️
                             </button>
                             <img src={movie.logoPath} alt={movie.name} className="w-full h-40 object-cover rounded-lg" />
-                            <p className="text-sm mt-1 text-center">{movie.name}</p>
+                            <p className="text-sm mt-1 text-center truncate">{movie.name}</p>{}
                           </div>
-                      ) : null
-                  ))}
+                        ))
+                      ) : (
+                        <div className="w-32 h-40 flex items-center justify-center text-gray-500 border rounded-lg">
+                          No movies
+                        </div>
+                  )}
               </div>
           </div>
 
@@ -71,7 +86,7 @@ function Friends() {
 
           <div className="p-4 bg-white rounded-lg">
               <h2 className="text-2xl font-bold mb-1">Friends</h2>
-              <ul className="h-64 overflow-x-auto overflow-y-auto">
+              <ul className="h-70 overflow-x-auto overflow-y-auto">
                   {friends.map((friend) => (
                       <li key={friend.id} className="flex items-center gap-4 p-2 border-b last:border-none">
                           <img src={friend.avatar} alt={friend.name} className="w-12 h-12 rounded-full" />
