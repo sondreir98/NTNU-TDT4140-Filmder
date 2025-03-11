@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { nextMovie } from "./Algoritme";
-import { dislikeMovie, getMovieBySearch, likeMovie } from "./DatabaseAccess";
+import { dislikeMovie, getAllMovies, likeMovie } from "./DatabaseAccess";
 import type { Film } from "./Movies";
 
 function Home() {
@@ -11,11 +11,24 @@ function Home() {
 	const [selectedYear, setSelectedYear] = useState<number | null>(null);
 	const [currentMovie, setCurrentMovie] = useState<Film | null>(null);
 	const [searchInput, setSearchInput] = useState("");
+	const [searchedMovies, setSearchedMovies] = useState<Record<string, Film>>({});
 	const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 	const [noMatch, setNoMatch] = useState<boolean>(false);
 
 	useEffect(() => {
 		updateMovie();
+		updateSearchedMovies()
+	}, []);
+
+	const updateSearchedMovies = useCallback(() => {
+		(async () => {
+			const moviesResult = await getAllMovies();
+			const searchOptions: Record<string, Film> = {};
+			for (const movie of moviesResult) {
+				searchOptions[movie.name] = movie;
+			}
+			setSearchedMovies(searchOptions);
+		})();
 	}, []);
 
 	const updateMovie = useCallback(() => {
@@ -92,33 +105,21 @@ function Home() {
 		setSearchInput(event.target.value);
 	};
 
-	const handleMovieSearch = useCallback(
-		async (movieName: string): Promise<Film> => {
-			const movies = await getMovieBySearch(movieName);
-			const movie = movies[0];
-			return movie;
-		},
-		[],
-	);
-
 	const handleSearchToggle = () => {
 		setIsSearchOpen((prev) => !prev);
 		setNoMatch(false);
 		setSearchInput("");
 	};
 
-	const applySearch = useCallback(() => {
-		(async () => {
-			try {
-				const movie = await handleMovieSearch(searchInput);
-				console.log("movie", movie);
-				setCurrentMovie(movie);
-				setIsSearchOpen(false);
-			} catch (error) {
-				setNoMatch(true);
-			}
-		})();
-	}, [searchInput, handleMovieSearch]);
+	const applySearch = async () => {
+		try {
+			const movie = searchedMovies[searchInput];
+			setCurrentMovie(movie);
+			setIsSearchOpen(false);
+		} catch (error) {
+			setNoMatch(true);
+		}
+	};
 
 	return (
 		<>
@@ -163,17 +164,20 @@ function Home() {
 								htmlFor="searchInput"
 								className="block text-sm font-semibold mb-1"
 							>
-								{" "}
 								Search for a movie by its title:
 							</label>
 							<input
 								id="searchInput"
+								list="searchOptions"
 								type="text"
 								onChange={handleSearchChange}
 								value={searchInput}
 								className="w-full border p-2 rounded"
 								placeholder="Enter movie title"
 							/>
+							<datalist id="searchOptions">
+								{Object.keys(searchedMovies).map(movieName => <option value={movieName}>{movieName}</option>)}
+							</datalist>
 						</div>
 						<button
 							onClick={applySearch}

@@ -32,27 +32,6 @@ function toMovieWithId(movieId: string, data: FilmDatabaseResult): Film {
 	};
 }
 
-export async function getMovieBySearch(movieName: string): Promise<Film[]> {
-	if (auth.currentUser === null) {
-		console.log("user: ", auth.currentUser);
-		return [];
-	}
-
-	const movies = await getAllMovies();
-
-	console.log("Searching for:", movieName.toLowerCase());
-
-	const filteredMovies: Film[] = movies.filter((movie) =>
-		movie.name.toLowerCase().includes(movieName.toLowerCase()),
-	);
-	console.log("liste blir laget!", filteredMovies);
-
-	if (filteredMovies.length === 0) {
-		throw new Error("No films match your search");
-	}
-	return filteredMovies;
-}
-
 export async function getLikedMovies(): Promise<Film[]> {
 	if (auth.currentUser === null) {
 		return [];
