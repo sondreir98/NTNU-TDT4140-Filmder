@@ -10,7 +10,6 @@ import {
 	getDocs,
 	query,
 	setDoc,
-	updateDoc,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
@@ -172,3 +171,29 @@ export async function getUser(): Promise<User | null> {
 
 	return userRef;
 }
+//Start: Kode generert ved hjelp av kunstig intelligens
+export async function removeMovie(movieId: string, category: string) {
+	console.log("Current user:", auth.currentUser);
+    try {
+        const user = auth.currentUser;
+		if (!user) throw new Error("User not authenticated");
+
+		const collectionRef = collection(db, category); // "liked" eller "disliked"
+		const q = query(collectionRef, where("movieId", "==", movieId), where("userId", "==", user.uid));
+		const snapshot = await getDocs(q);
+
+		if (snapshot.empty) {
+			console.warn(`No movie found with movieId: ${movieId} in ${category}`);
+			return; // Ingenting å slette
+		}
+
+		for (const docItem of snapshot.docs) {
+			await deleteDoc(doc(db, category, docItem.id));
+			console.log(`Movie ${movieId} removed from ${category}`);
+		}
+	} catch (error) {
+		console.error("Error removing movie:", error);
+	}
+}
+//Slutt: Kode generert ved hjelp av kunstig intelligens
+
