@@ -2,10 +2,13 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import Friends from "./Friends.tsx";
+import FriendsProfile from "./FriendsProfile.tsx";
 import Home from "./Home.tsx";
 import Navbar from "./Navbar.tsx";
 import Profile from "./Profile.tsx";
 import ProfilePageButton from "./ProfilePageButton.tsx";
+import SearchFriends from "./SearchFriends.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
 
@@ -34,6 +37,9 @@ createRoot(
 					<Route path="/login" element={<LoginPage />} />
 					<Route path="/signup" element={<SignUpPage />} />
 					<Route path="/Profile" element={<Profile />} />
+					<Route path="/Friends" element={<Friends />} />
+					<Route path="/SearchFriends" element={<SearchFriends />} />
+					<Route path="/friends/:friendId" element={<FriendsProfile />} />
 				</Routes>
 			</main>
 			<footer className="max-w-md mx-auto h-2/20">
