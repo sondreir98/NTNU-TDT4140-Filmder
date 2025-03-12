@@ -1,62 +1,64 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { auth, db } from "./Database";
-import type { Film } from "./Movies";
 import { getUsersLikedMovies } from "./DatabaseAccess";
+import type { Film } from "./Movies";
 
 type User = {
-    friends: string[],
-    username: string,
-}
+	friends: string[];
+	username: string;
+};
 async function getUsersWithIds(uids: string[]): Promise<User[]> {
-    const users = [];
-    for (const uid of uids) {
-        const user = (await getDoc(doc(db, "users", uid))).data();
-        if (!user) {
-            throw new Error("User with ID didn't exist.");
-        }
-        users.push((await getDoc(doc(db, "users", uid))).data() as User)
-    }
-    return users;
+	const users = [];
+	for (const uid of uids) {
+		const user = (await getDoc(doc(db, "users", uid))).data();
+		if (!user) {
+			throw new Error("User with ID didn't exist.");
+		}
+		users.push((await getDoc(doc(db, "users", uid))).data() as User);
+	}
+	return users;
 }
 async function getMoviesWithIds(ids: string[]): Promise<Film[]> {
-    const movies = [];
-    for (const id of ids) {
-        const movie = (await getDoc(doc(db, "films", id))).data();
-        if (!movie) {
-            throw new Error("Movie with ID didn't exist.");
-        }
-        movies.push((await getDoc(doc(db, "films", id))).data() as Film)
-    }
-    return movies;
+	const movies = [];
+	for (const id of ids) {
+		const movie = (await getDoc(doc(db, "films", id))).data();
+		if (!movie) {
+			throw new Error("Movie with ID didn't exist.");
+		}
+		movies.push((await getDoc(doc(db, "films", id))).data() as Film);
+	}
+	return movies;
 }
 async function getCurrentUser(): Promise<User> {
-    if (!auth.currentUser?.uid) {
-        throw new Error("Cannot find current user.");
-    }
-    return (await getUsersWithIds([auth.currentUser.uid]))[0];
+	if (!auth.currentUser?.uid) {
+		throw new Error("Cannot find current user.");
+	}
+	return (await getUsersWithIds([auth.currentUser.uid]))[0];
 }
-async function getCurrentUsersFriendsLikedMovies(): Promise<Record<string, number>> {
-    console.log(await getCurrentUser());
-    const friendUids = (await getCurrentUser()).friends;
-    friendUids.push(auth.currentUser?.uid as string);
-    const likedMoviesMap: Record<string, number> = {};
-    for (const friendUid of friendUids) {
-        for (const movie of await getUsersLikedMovies(friendUid)) {
-            if (!Object.keys(likedMoviesMap).includes(movie.movieId)) {
-                likedMoviesMap[movie.movieId] = 0;
-            }
-            likedMoviesMap[movie.movieId] += 1;
-        };
-    }
-    return likedMoviesMap;
+async function getCurrentUsersFriendsLikedMovies(): Promise<
+	Record<string, number>
+> {
+	console.log(await getCurrentUser());
+	const friendUids = (await getCurrentUser()).friends;
+	friendUids.push(auth.currentUser?.uid as string);
+	const likedMoviesMap: Record<string, number> = {};
+	for (const friendUid of friendUids) {
+		for (const movie of await getUsersLikedMovies(friendUid)) {
+			if (!Object.keys(likedMoviesMap).includes(movie.movieId)) {
+				likedMoviesMap[movie.movieId] = 0;
+			}
+			likedMoviesMap[movie.movieId] += 1;
+		}
+	}
+	return likedMoviesMap;
 }
 export async function getSortedLikedMoviesAmongFriends(): Promise<Film[]> {
-    const likedMoviesMap = await getCurrentUsersFriendsLikedMovies();
-    const movieIds = Object.keys(likedMoviesMap);
-    const movies = await getMoviesWithIds(movieIds);
-    movies.sort((a, b) => likedMoviesMap[a.movieId] - likedMoviesMap[b.movieId]);
-    return movies;
+	const likedMoviesMap = await getCurrentUsersFriendsLikedMovies();
+	const movieIds = Object.keys(likedMoviesMap);
+	const movies = await getMoviesWithIds(movieIds);
+	movies.sort((a, b) => likedMoviesMap[a.movieId] - likedMoviesMap[b.movieId]);
+	return movies;
 }
 
 // export function TopFive() {
