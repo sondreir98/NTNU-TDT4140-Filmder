@@ -10,7 +10,6 @@ import {
 	getDocs,
 	query,
 	setDoc,
-	updateDoc,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
@@ -238,6 +237,48 @@ export async function getUser(): Promise<User | null> {
 
 	return userRef;
 }
+//Start: Kode generert ved hjelp av kunstig intelligens
+/**
+ * @param movieId
+ * @param category
+ */
+export const removeMovie = async (
+	movieId: string,
+	category: "liked" | "disliked",
+) => {
+	try {
+		const user = auth.currentUser;
+		if (!user) {
+			throw new Error("User is not authenticated");
+		}
+
+		const collectionName =
+			category === "liked" ? "userLikedFilms" : "userDislikedFilms";
+
+		const q = query(
+			collection(db, collectionName),
+			where("user", "==", user.uid),
+			where("film", "==", movieId),
+		);
+
+		const querySnapshot = await getDocs(q);
+
+		if (!querySnapshot.empty) {
+			for (const doc of querySnapshot.docs) {
+				await deleteDoc(doc.ref);
+			}
+
+			console.log(
+				`Successfully removed movie ${movieId} from ${collectionName}`,
+			);
+		} else {
+			console.warn("No matching document found to delete.");
+		}
+	} catch (error) {
+		console.error("Error removing movie:", error);
+	}
+};
+//Slutt: Kode generert ved hjelp av kunstig intelligens
 
 export async function getFriend(
 	friendId: string,
