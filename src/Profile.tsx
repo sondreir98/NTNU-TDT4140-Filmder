@@ -35,9 +35,13 @@ function Profile() {
 				className="w-40 h-40 rounded-full mt-16 border-4 border-gray-500"
 			/>
 
-			<p className="mt-2 text-lg font-semibold">{auth.currentUser?.displayName || "Username"}</p>
+			<p className="mt-2 text-lg font-semibold">
+				{auth.currentUser?.displayName || "Username"}
+			</p>
 
-			<p className="text-gray-600">{auth.currentUser?.email || "email@example.com"}</p>
+			<p className="text-gray-600">
+				{auth.currentUser?.email || "email@example.com"}
+			</p>
 
 			<div className="w-full max-w-lg bg-white p-4 rounded-lg shadow-lg mb-3 mt-3">
 				<label
@@ -57,13 +61,11 @@ function Profile() {
 				</select>
 			</div>
 
-			
 			<div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg">
 				<h2 className="text-2xl font-semibold text-gray-800 mb-4">
 					{selectedCategory === "liked" ? "Liked Movies" : "Disliked Movies"}
 				</h2>
 
-				
 				<div className="h-58 max-h-80 overflow-y-auto p-2 border border-gray-300 rounded-lg bg-gray-50">
 					{moviesToShow.length > 0 ? (
 						<ul className="space-y-4">

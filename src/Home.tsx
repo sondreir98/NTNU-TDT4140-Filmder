@@ -11,13 +11,15 @@ function Home() {
 	const [selectedYear, setSelectedYear] = useState<number | null>(null);
 	const [currentMovie, setCurrentMovie] = useState<Film | null>(null);
 	const [searchInput, setSearchInput] = useState("");
-	const [searchedMovies, setSearchedMovies] = useState<Record<string, Film>>({});
+	const [searchedMovies, setSearchedMovies] = useState<Record<string, Film>>(
+		{},
+	);
 	const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 	const [noMatch, setNoMatch] = useState<boolean>(false);
 
 	useEffect(() => {
 		updateMovie();
-		updateSearchedMovies()
+		updateSearchedMovies();
 	}, []);
 
 	const updateSearchedMovies = useCallback(() => {
@@ -176,7 +178,11 @@ function Home() {
 								placeholder="Enter movie title"
 							/>
 							<datalist id="searchOptions">
-								{Object.keys(searchedMovies).map(movieName => <option value={movieName}>{movieName}</option>)}
+								{Object.keys(searchedMovies).map((movieName) => (
+									<option key={movieName} value={movieName}>
+										{movieName}
+									</option>
+								))}
 							</datalist>
 						</div>
 						<button
