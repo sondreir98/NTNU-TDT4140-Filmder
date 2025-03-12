@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { auth } from "./Database";
-import { getDislikedMovies, getLikedMovies, addAvatar, getAvatar } from "./DatabaseAccess";
+import {
+	getDislikedMovies,
+	getLikedMovies,
+	getUser,
+	setAvatar,
+} from "./DatabaseAccess";
 import type { Film } from "./Movies";
 import { getRandomMovie } from "./RandomMovie";
-
-
 
 function Profile() {
 	const [selectedCategory, setSelectedCategory] = useState("liked");
@@ -16,12 +19,12 @@ function Profile() {
 	const [randomMovie, setRandomMovie] = useState<Film | null>(null);
 
 	const presetAvatars = [
-		"/avatars/avatar1.jpg",
-		"/avatars/avatar2.jpg",
-		"/avatars/avatar3.jpg",
-		"/avatars/avatar4.jpg",
-		"/avatars/avatar5.jpg",
-		"/avatars/avatar6.jpg",
+		"/avatars/Avatar1.jpg",
+		"/avatars/Avatar2.jpg",
+		"/avatars/Avatar3.jpg",
+		"/avatars/Avatar4.jpg",
+		"/avatars/Avatar5.jpg",
+		"/avatars/Avatar6.jpg",
 	];
 
 	// Henter filmer fra db
@@ -33,16 +36,12 @@ function Profile() {
 			const liked = await getLikedMovies();
 			console.log("Fetched liked movies:", liked);
 			console.log("User is:", auth.currentUser);
-      const avatar = await getAvatar();
-			const disliked = await getDislikedMovies();
-			setLikedMovies(liked);
-			setDislikedMovies(disliked);
-      setUserAvatar(avatar || "https://images.desenio.com/zoom/18823_1.jpg");
+			setUserAvatar(avatar || "https://images.desenio.com/zoom/18823_1.jpg");
 		}
 		fetchMovies();
 	}, []);
 
-  //uferdig
+	//uferdig
 	async function showRandomMovie() {
 		const movie = await getRandomMovie();
 		if (movie) {
@@ -56,15 +55,11 @@ function Profile() {
 		setRandomMovie(null);
 	};
 
-  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (!event.target.files || event.target.files.length === 0) return;
-
-		const file = event.target.files[0];
-		const avatarPath = `.../avatars/${file.name}`;
-
+	const handleAvatarSelect = async (avatarPath: string) => {
 		try {
-			await addAvatar(avatarPath);
-			setUserAvatar(avatarPath); 
+			await setAvatar(avatarPath);
+			setUserAvatar(avatarPath);
+			setIsAvatarPopupOpen(false); // Lukker popup
 		} catch (error) {
 			console.error("Failed to update avatar:", error);
 		}
@@ -124,7 +119,9 @@ function Profile() {
 				</div>
 			)}
 
-			<p className="mt-2 text-lg font-semibold">{auth.currentUser?.displayName || "Username"}</p>
+			<p className="mt-2 text-lg font-semibold">
+				{auth.currentUser?.displayName || "Username"}
+			</p>
 
 			<p className="text-gray-600">
 				{auth.currentUser?.email || "email@example.com"}
