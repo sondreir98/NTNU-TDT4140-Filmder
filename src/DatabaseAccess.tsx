@@ -4,14 +4,17 @@ import {
 	addDoc,
 	and,
 	collection,
+	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
 	query,
+	setDoc,
+	updateDoc,
 	where,
 } from "firebase/firestore";
 import { auth, db } from "./Database";
-import type { Film } from "./Movies";
+import type { Film, User } from "./Movies";
 
 type FilmDatabaseResult = {
 	name: string;
@@ -54,6 +57,26 @@ export async function getLikedMovies(): Promise<Film[]> {
 		);
 	}
 	return unpackedFilms;
+}
+export async function getUsersLikedMovies(uid: string): Promise<Film[]> {
+    const allUserLikedRelations = await getDocs(
+        query(
+            collection(db, "userLikedFilms"),
+            where("user", "==", uid),
+        ),
+    );
+    const unpackedFilms: Film[] = [];
+    for (const relation of allUserLikedRelations.docs) {
+        const filmId = relation.get("film");
+        const film = await getDoc(doc(db, "films", filmId));
+        if (!film.data()) {
+            throw new Error("userLikedFilms has wrong formatted entries.");
+        }
+        unpackedFilms.push(
+            toMovieWithId(filmId, film.data() as FilmDatabaseResult),
+        );
+    }
+    return unpackedFilms;
 }
 export async function getDislikedMovies(): Promise<Film[]> {
 	if (auth.currentUser === null) {
@@ -144,4 +167,28 @@ export async function dislikeMovie(movieId: string) {
 		film: movieId,
 		user: auth.currentUser.uid,
 	});
+}
+
+export async function setAvatar(avatarPath: string) {
+	if (auth.currentUser === null) {
+		throw new Error("You need to be logged in to set an avatar.");
+	}
+
+	const userId = auth.currentUser.uid;
+
+	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
+	userRef.avatarPath = avatarPath;
+
+	await setDoc(doc(db, "users", userId), userRef);
+}
+
+export async function getUser(): Promise<User | null> {
+	if (auth.currentUser === null) {
+		return null;
+	}
+
+	const userId = auth.currentUser.uid;
+	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
+
+	return userRef;
 }
