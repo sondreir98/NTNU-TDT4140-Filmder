@@ -21,6 +21,7 @@ function Profile() {
 	const [userAvatar, setUserAvatar] = useState<string | null>(null);
 	const [isAvatarPopupOpen, setIsAvatarPopupOpen] = useState(false);
 	const [randomMovie, setRandomMovie] = useState<Film | null>(null);
+	const [popupMessage, setPopupMessage] = useState<string | null>(null);
 	const navigate = useNavigate();
 
 	const presetAvatars = [
@@ -47,14 +48,14 @@ function Profile() {
 			setUserAvatar(avatar ?? "https://images.desenio.com/zoom/18823_1.jpg");
 		}
 		fetchMovies();
-	}, []);
+	}, []);	
 
 	async function showRandomMovie() {
-		const movie = await getRandomMovie();
-		if (movie) {
-			setRandomMovie(movie);
+		if (likedMovies.length === 0) {
+			setPopupMessage("No liked movies");
 		} else {
-			alert("No liked movies found!");
+			const movie = await getRandomMovie();
+			setRandomMovie(movie);
 		}
 	}
 
@@ -198,6 +199,21 @@ function Profile() {
 					Random Liked Movie!
 				</button>
 
+				{popupMessage && (
+					<div className="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-50">
+						<div className="bg-white p-4 rounded-lg shadow-lg">
+							<p>{popupMessage}</p>
+							<button
+								type="button" 
+								onClick={() => setPopupMessage(null)}
+								className="mt-4 ml-16 p-1 bg-blue-500 text-white rounded" 
+                            >
+								Close
+							</button>
+						</div>
+					</div>
+				)}
+				
 				{randomMovie && (
 					<div className="fixed inset-0 bg-primary bg-opacity-50 flex justify-center items-center">
 						<div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
