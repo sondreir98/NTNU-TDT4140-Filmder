@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { auth } from "./Database";
 import {
 	getDislikedMovies,
@@ -6,14 +7,15 @@ import {
 	getUser,
 	setAvatar,
 } from "./DatabaseAccess";
+import { removeMovie } from "./DatabaseAccess";
+import { LogoutIcon } from "./Icons";
 import type { Film } from "./Movies";
 import { getRandomMovie } from "./RandomMovie";
-import { LogoutIcon } from "./Icons";
-import { useNavigate } from "react-router-dom";
-import { removeMovie } from "./DatabaseAccess";
 
 function Profile() {
-	const [selectedCategory, setSelectedCategory] = useState("liked");
+	const [selectedCategory, setSelectedCategory] = useState<
+		"liked" | "disliked"
+	>("liked");
 	const [likedMovies, setLikedMovies] = useState<Film[]>([]);
 	const [dislikedMovies, setDislikedMovies] = useState<Film[]>([]);
 	const [userAvatar, setUserAvatar] = useState<string | null>(null);
@@ -82,13 +84,19 @@ function Profile() {
 		}
 	};
 	//Start: Kode produsert ved hjelp av kunstig intelligens
+
 	const handleRemoveMovie = async (movieId: string) => {
 		try {
-			await removeMovie(movieId, selectedCategory);  // Fjern filmen fra databasen
+			await removeMovie(movieId, selectedCategory);
+
 			if (selectedCategory === "liked") {
-				setLikedMovies((prev) => prev.filter((movie) => movie.movieId !== movieId));  // Fjern filmen fra liked-listen
+				setLikedMovies((prev) =>
+					prev.filter((movie) => movie.movieId !== movieId),
+				);
 			} else {
-				setDislikedMovies((prev) => prev.filter((movie) => movie.movieId !== movieId));  // Fjern filmen fra disliked-listen
+				setDislikedMovies((prev) =>
+					prev.filter((movie) => movie.movieId !== movieId),
+				);
 			}
 		} catch (error) {
 			console.error("Failed to remove movie:", error);
@@ -103,7 +111,7 @@ function Profile() {
 				onClick={handleLogout}
 				className="absolute top-4 right-4 bg-negative text-white px-0 py-0 rounded-lg shadow-md hover:bg-red-600 transition"
 			>
-				<LogoutIcon/>
+				<LogoutIcon />
 			</button>
 
 			{userAvatar && (
@@ -174,7 +182,9 @@ function Profile() {
 					id="movieFilter"
 					className="w-34 p-1.5 mr-2 border rounded-lg bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
 					value={selectedCategory}
-					onChange={(e) => setSelectedCategory(e.target.value)}
+					onChange={(e) =>
+						setSelectedCategory((e.target.value as "liked") || "disliked")
+					}
 				>
 					<option value="liked">Liked Movies</option>
 					<option value="disliked">Disliked Movies</option>
@@ -215,25 +225,25 @@ function Profile() {
 								<li
 									key={movie.movieId}
 									className="p-4 rounded-lg border border-gray-200 shadow-sm bg-white"
-								>	
+								>
 									<div>
-									<p className="text-l font-semibold text-gray-800">
-										{movie.name}
-									</p>
-									<p className="text-sm text-gray-600">{movie.year}</p>
-									<p className="text-gray-500 mt-2">{movie.info}</p>
-									<p className="text-sm text-gray-400 mt-2">
-										{movie.genre.join(", ")}
-									</p>
+										<p className="text-l font-semibold text-gray-800">
+											{movie.name}
+										</p>
+										<p className="text-sm text-gray-600">{movie.year}</p>
+										<p className="text-gray-500 mt-2">{movie.info}</p>
+										<p className="text-sm text-gray-400 mt-2">
+											{movie.genre.join(", ")}
+										</p>
 									</div>
 
-									<button onClick={() => handleRemoveMovie(movie.movieId)} 
+									<button
+										onClick={() => handleRemoveMovie(movie.movieId)}
 										type="button"
-										className="ml-44 bg-negative text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition"
+										className="ml-48 bg-negative text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition"
 									>
-                                        Remove
-                                    </button>
-
+										Remove
+									</button>
 								</li>
 							))}
 						</ul>

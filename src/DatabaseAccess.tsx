@@ -172,28 +172,44 @@ export async function getUser(): Promise<User | null> {
 	return userRef;
 }
 //Start: Kode generert ved hjelp av kunstig intelligens
-export async function removeMovie(movieId: string, category: string) {
-	console.log("Current user:", auth.currentUser);
-    try {
-        const user = auth.currentUser;
-		if (!user) throw new Error("User not authenticated");
-
-		const collectionRef = collection(db, category); // "liked" eller "disliked"
-		const q = query(collectionRef, where("movieId", "==", movieId), where("userId", "==", user.uid));
-		const snapshot = await getDocs(q);
-
-		if (snapshot.empty) {
-			console.warn(`No movie found with movieId: ${movieId} in ${category}`);
-			return; // Ingenting å slette
+/**
+ * @param movieId
+ * @param category
+ */
+export const removeMovie = async (
+	movieId: string,
+	category: "liked" | "disliked",
+) => {
+	try {
+		const user = auth.currentUser;
+		if (!user) {
+			throw new Error("User is not authenticated");
 		}
 
-		for (const docItem of snapshot.docs) {
-			await deleteDoc(doc(db, category, docItem.id));
-			console.log(`Movie ${movieId} removed from ${category}`);
+		const collectionName =
+			category === "liked" ? "userLikedFilms" : "userDislikedFilms";
+
+		const q = query(
+			collection(db, collectionName),
+			where("user", "==", user.uid),
+			where("film", "==", movieId),
+		);
+
+		const querySnapshot = await getDocs(q);
+
+		if (!querySnapshot.empty) {
+			for (const doc of querySnapshot.docs) {
+				await deleteDoc(doc.ref);
+			}
+
+			console.log(
+				`Successfully removed movie ${movieId} from ${collectionName}`,
+			);
+		} else {
+			console.warn("No matching document found to delete.");
 		}
 	} catch (error) {
 		console.error("Error removing movie:", error);
 	}
-}
+};
 //Slutt: Kode generert ved hjelp av kunstig intelligens
-
