@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { auth } from "./Database";
 import {
 	getDislikedMovies,
@@ -6,17 +7,22 @@ import {
 	getUser,
 	setAvatar,
 } from "./DatabaseAccess";
+import { removeMovie } from "./DatabaseAccess";
+import { LogoutIcon } from "./Icons";
 import type { Film } from "./Movies";
 import { getRandomMovie } from "./RandomMovie";
 
 function Profile() {
-	const [selectedCategory, setSelectedCategory] = useState("liked");
+	const [selectedCategory, setSelectedCategory] = useState<
+		"liked" | "disliked"
+	>("liked");
 	const [likedMovies, setLikedMovies] = useState<Film[]>([]);
 	const [dislikedMovies, setDislikedMovies] = useState<Film[]>([]);
-	const [user, setUser] = useState(null);
 	const [userAvatar, setUserAvatar] = useState<string | null>(null);
 	const [isAvatarPopupOpen, setIsAvatarPopupOpen] = useState(false);
 	const [randomMovie, setRandomMovie] = useState<Film | null>(null);
+	const [popupMessage, setPopupMessage] = useState<string | null>(null);
+	const navigate = useNavigate();
 
 	const presetAvatars = [
 		"/avatars/avatar1.jpg",
@@ -42,22 +48,21 @@ function Profile() {
 			setUserAvatar(avatar ?? "https://images.desenio.com/zoom/18823_1.jpg");
 		}
 		fetchMovies();
-	}, []);
+	}, []);	
 
-	//uferdig
 	async function showRandomMovie() {
-		const movie = await getRandomMovie();
-		if (movie) {
-			setRandomMovie(movie);
+		if (likedMovies.length === 0) {
+			setPopupMessage("No liked movies");
 		} else {
-			alert("No liked movies found!");
+			const movie = await getRandomMovie();
+			setRandomMovie(movie);
 		}
 	}
 
 	const closeRandomMoviePopup = () => {
 		setRandomMovie(null);
 	};
-
+	
 	const handleAvatarSelect = async (avatarPath: string) => {
 		try {
 			await setAvatar(avatarPath);
@@ -71,8 +76,45 @@ function Profile() {
 	const moviesToShow =
 		selectedCategory === "liked" ? likedMovies : dislikedMovies;
 
+	const handleLogout = async () => {
+		try {
+			await auth.signOut();
+			navigate("/login");
+		} catch (error) {
+			console.error("Logout failed:", error);
+		}
+	};
+	//Start: Kode produsert ved hjelp av kunstig intelligens
+
+	const handleRemoveMovie = async (movieId: string) => {
+		try {
+			await removeMovie(movieId, selectedCategory);
+
+			if (selectedCategory === "liked") {
+				setLikedMovies((prev) =>
+					prev.filter((movie) => movie.movieId !== movieId),
+				);
+			} else {
+				setDislikedMovies((prev) =>
+					prev.filter((movie) => movie.movieId !== movieId),
+				);
+			}
+		} catch (error) {
+			console.error("Failed to remove movie:", error);
+		}
+	};
+	//Slutt: Kode produsert ved hjelp av kunstig intelligens
+
 	return (
 		<div className="bg-gray-100 p-4 flex flex-col items-center">
+			<button
+				type="button"
+				onClick={handleLogout}
+				className="absolute top-4 right-4 bg-negative text-white px-0 py-0 rounded-lg shadow-md hover:bg-red-600 transition"
+			>
+				<LogoutIcon />
+			</button>
+
 			{userAvatar && (
 				<img
 					src={userAvatar}
@@ -141,7 +183,9 @@ function Profile() {
 					id="movieFilter"
 					className="w-34 p-1.5 mr-2 border rounded-lg bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
 					value={selectedCategory}
-					onChange={(e) => setSelectedCategory(e.target.value)}
+					onChange={(e) =>
+						setSelectedCategory((e.target.value as "liked") || "disliked")
+					}
 				>
 					<option value="liked">Liked Movies</option>
 					<option value="disliked">Disliked Movies</option>
@@ -155,6 +199,21 @@ function Profile() {
 					Random Liked Movie!
 				</button>
 
+				{popupMessage && (
+					<div className="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-50">
+						<div className="bg-white p-4 rounded-lg shadow-lg">
+							<p>{popupMessage}</p>
+							<button
+								type="button" 
+								onClick={() => setPopupMessage(null)}
+								className="mt-4 ml-16 p-1 bg-blue-500 text-white rounded" 
+                            >
+								Close
+							</button>
+						</div>
+					</div>
+				)}
+				
 				{randomMovie && (
 					<div className="fixed inset-0 bg-primary bg-opacity-50 flex justify-center items-center">
 						<div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
@@ -167,7 +226,7 @@ function Profile() {
 							<button
 								type="button"
 								onClick={closeRandomMoviePopup}
-								className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg"
+								className="mt-4 bg-negative text-white px-4 py-2 rounded-lg"
 							>
 								Close
 							</button>
@@ -180,17 +239,27 @@ function Profile() {
 						<ul className="space-y-4">
 							{moviesToShow.map((movie) => (
 								<li
-									key={movie.name}
+									key={movie.movieId}
 									className="p-4 rounded-lg border border-gray-200 shadow-sm bg-white"
 								>
-									<p className="text-l font-semibold text-gray-800">
-										{movie.name}
-									</p>
-									<p className="text-sm text-gray-600">{movie.year}</p>
-									<p className="text-gray-500 mt-2">{movie.info}</p>
-									<p className="text-sm text-gray-400 mt-2">
-										{movie.genre.join(", ")}
-									</p>
+									<div>
+										<p className="text-l font-semibold text-gray-800">
+											{movie.name}
+										</p>
+										<p className="text-sm text-gray-600">{movie.year}</p>
+										<p className="text-gray-500 mt-2">{movie.info}</p>
+										<p className="text-sm text-gray-400 mt-2">
+											{movie.genre.join(", ")}
+										</p>
+									</div>
+
+									<button
+										onClick={() => handleRemoveMovie(movie.movieId)}
+										type="button"
+										className="ml-48 bg-negative text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition"
+									>
+										Remove
+									</button>
 								</li>
 							))}
 						</ul>

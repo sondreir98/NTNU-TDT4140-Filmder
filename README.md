@@ -57,3 +57,21 @@ By offering multiple filtering and recommendation features, Filmder helps custom
 [Tailwind](https://tailwindcss.com/docs/)
 
 [Firebase](https://firebase.google.com/docs/web/setup)
+
+[Playwright] (https://playwright.dev/)
+
+## Testing
+
+Run these two commands first;
+
+`pnpm install` - Install all packages including playwright
+
+`npx firebase emulators:start` - Run a firebase emulator so that the tests are run locally
+
+After the emulator is running you can open a new terminal.
+
+Run `pnpm playwright test` to run your tests.
+
+For a single file, run `pnpm playwright test tests/example.spec.ts`
+
+For a specific test, run `pnpm playwright test -g "should login user"`

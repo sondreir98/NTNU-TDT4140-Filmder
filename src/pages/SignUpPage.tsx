@@ -25,8 +25,12 @@ const SignUpPage = () => {
 				email,
 				password,
 			);
-			await updateProfile(userCredential.user, { displayName: username });
-			await setDoc(doc(db, "users", userCredential.user.uid), {});
+			await updateProfile(userCredential.user, {displayName: username});
+			await setDoc(doc(db, "users", userCredential.user.uid), {
+				email: userCredential.user.email,
+				username: userCredential.user.displayName,
+				friends: [],
+			});
 			setError("");
 			navigate("/");
 		} catch (err) {

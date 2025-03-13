@@ -57,6 +57,47 @@ export async function getLikedMovies(): Promise<Film[]> {
 	}
 	return unpackedFilms;
 }
+export async function getUsersLikedMovies(uid: string): Promise<Film[]> {
+	const allUserLikedRelations = await getDocs(
+		query(collection(db, "userLikedFilms"), where("user", "==", uid)),
+	);
+	const unpackedFilms: Film[] = [];
+	for (const relation of allUserLikedRelations.docs) {
+		const filmId = relation.get("film");
+		const film = await getDoc(doc(db, "films", filmId));
+		if (!film.data()) {
+			throw new Error("userLikedFilms has wrong formatted entries.");
+		}
+		unpackedFilms.push(
+			toMovieWithId(filmId, film.data() as FilmDatabaseResult),
+		);
+	}
+	return unpackedFilms;
+}
+
+export async function getFriendsLikedMovies(friendId: string): Promise<Film[]> {
+	// Query for the liked films of the given friend's UID
+	const allUserLikedRelations = await getDocs(
+		query(
+			collection(db, "userLikedFilms"),
+			where("user", "==", friendId), // Using the friendId here
+		),
+	);
+
+	const unpackedFilms: Film[] = [];
+	for (const relation of allUserLikedRelations.docs) {
+		const filmId = relation.get("film");
+		const film = await getDoc(doc(db, "films", filmId));
+		if (!film.data()) {
+			throw new Error("userLikedFilms has wrong formatted entries.");
+		}
+		unpackedFilms.push(
+			toMovieWithId(filmId, film.data() as FilmDatabaseResult),
+		);
+	}
+	return unpackedFilms;
+}
+
 export async function getDislikedMovies(): Promise<Film[]> {
 	if (auth.currentUser === null) {
 		return [];
@@ -81,6 +122,31 @@ export async function getDislikedMovies(): Promise<Film[]> {
 	return unpackedFilms;
 }
 const POPULARITY_FRACTION = 1 / 20;
+
+export async function getFriendsDislikedMovies(
+	friendId: string,
+): Promise<Film[]> {
+	const allUserDislikedRelations = await getDocs(
+		query(
+			collection(db, "userDislikedFilms"),
+			where("user", "==", friendId), // Using the friendId here
+		),
+	);
+
+	const unpackedFilms: Film[] = [];
+	for (const relation of allUserDislikedRelations.docs) {
+		const filmId = relation.get("film");
+		const film = await getDoc(doc(db, "films", filmId));
+		if (!film.data()) {
+			throw new Error("userDislikedFilms has wrong formatted entries.");
+		}
+		unpackedFilms.push(
+			toMovieWithId(filmId, film.data() as FilmDatabaseResult),
+		);
+	}
+	return unpackedFilms;
+}
+
 export async function getAllMovies(
 	genreFilter: string[] = [],
 	yearFilter: number | null = null,
@@ -186,4 +252,74 @@ export async function getUser(): Promise<User | null> {
 	const userRef = (await getDoc(doc(db, "users", userId))).data() as User;
 
 	return userRef;
+}
+//Start: Kode generert ved hjelp av kunstig intelligens
+/**
+ * @param movieId
+ * @param category
+ */
+export const removeMovie = async (
+	movieId: string,
+	category: "liked" | "disliked",
+) => {
+	try {
+		const user = auth.currentUser;
+		if (!user) {
+			throw new Error("User is not authenticated");
+		}
+
+		const collectionName =
+			category === "liked" ? "userLikedFilms" : "userDislikedFilms";
+
+		const q = query(
+			collection(db, collectionName),
+			where("user", "==", user.uid),
+			where("film", "==", movieId),
+		);
+
+		const querySnapshot = await getDocs(q);
+
+		if (!querySnapshot.empty) {
+			for (const doc of querySnapshot.docs) {
+				await deleteDoc(doc.ref);
+			}
+
+			console.log(
+				`Successfully removed movie ${movieId} from ${collectionName}`,
+			);
+		} else {
+			console.warn("No matching document found to delete.");
+		}
+	} catch (error) {
+		console.error("Error removing movie:", error);
+	}
+};
+//Slutt: Kode generert ved hjelp av kunstig intelligens
+
+export async function getFriend(
+	friendId: string,
+): Promise<{ username: string; avatarPath: string } | null> {
+	// Check if the user is authenticated
+	if (auth.currentUser === null) {
+		return null;
+	}
+
+	// Reference to the friend's user data in Firestore (using friendId)
+	const friendRef = doc(db, "users", friendId);
+
+	// Fetch the friend's data from Firestore
+	const friendDoc = await getDoc(friendRef);
+
+	// If the document exists, return the data in the expected structure
+	if (friendDoc.exists()) {
+		const friendData = friendDoc.data();
+		// Return the necessary fields (username and avatarPath)
+		return {
+			username: friendData.username,
+			avatarPath: friendData.avatarPath,
+		};
+	}
+	// If no document exists for that friendId
+	console.log("Friend not found");
+	return null;
 }
