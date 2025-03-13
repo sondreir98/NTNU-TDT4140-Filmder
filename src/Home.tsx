@@ -46,7 +46,7 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [selectedGenres, selectedYear, wantsPopular]);
 
 	const handleLike = useCallback(() => {
@@ -63,7 +63,7 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [currentMovie, selectedGenres, selectedYear, wantsPopular]);
 
 	const handleDislike = useCallback(() => {
@@ -80,7 +80,7 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [currentMovie, selectedGenres, selectedYear, wantsPopular]);
 
 	//C: Kode lagt til for filtrering (linje 69-94)
