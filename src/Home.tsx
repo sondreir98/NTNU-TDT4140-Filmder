@@ -16,6 +16,7 @@ function Home() {
 	);
 	const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 	const [noMatch, setNoMatch] = useState<boolean>(false);
+	const [openInfo, setOpenInfo] = useState<boolean>(false);
 
 	useEffect(() => {
 		updateMovie();
@@ -85,6 +86,14 @@ function Home() {
 	const handleFilterToggle = () => {
 		setIsFilterOpen((prev) => !prev);
 	};
+
+	const handleInfoToggle = () => {
+		if (currentMovie !== null && currentMovie !== undefined) {
+			setOpenInfo((prev) => !prev);
+			console.log("ønkser se info om film: ", currentMovie);
+		}
+	};
+
 	const handleGenreChange = (genre: string) => {
 		setSelectedGenres((prev) =>
 			prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre],
@@ -270,6 +279,33 @@ function Home() {
 							Apply Filter
 						</button>
 					</div>
+				</div>
+			)}
+
+			{/*C: Kode lagt til for informasjons-popup*/}
+			<button
+				onClick={handleInfoToggle}
+				type="button"
+				className="absolute bottom-[0px] left-[0px] text-white text-5xl px-4 py-2 rounded-lg hover:opacity-40 transition cursor-pointer z-[0px]"
+			>
+				ℹ️
+			</button>
+
+			{openInfo && currentMovie !== null && (
+				<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg rounded-lg p-6 w-[90vw] sm:w-[50vw] max-w-xl z-[100] border border-gray-300">
+					<h2 className="text-lg font-bold mb-4 text-center">
+						{currentMovie.name}
+					</h2>
+					<p className="text-center">{currentMovie.info}</p>
+					<br/>
+					<p className="text-center">Release year: {currentMovie.year}</p>
+					<button
+						onClick={() => setOpenInfo(false)}
+						type="button"
+						className="mt-4 w-full bg-gray-200 hover:bg-gray-300 py-2 rounded-lg transition cursor-pointer"
+					>
+						Close
+					</button>
 				</div>
 			)}
 		</>
