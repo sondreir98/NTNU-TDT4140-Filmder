@@ -11,7 +11,6 @@ import ProfilePageButton from "./ProfilePageButton.tsx";
 import SearchFriends from "./SearchFriends.tsx";
 import SignUpPage from "./pages/SignUpPage.tsx";
 import LoginPage from "./pages/loginpage.tsx";
-import Friends from "./Friends.tsx";
 
 const Header = () => {
 	const location = useLocation();

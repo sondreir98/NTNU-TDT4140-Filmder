@@ -62,31 +62,7 @@ function Profile() {
 	const closeRandomMoviePopup = () => {
 		setRandomMovie(null);
 	};
-
-	const handleAvatarSelect = async (avatarPath: string) => {
-		try {
-			await setAvatar(avatarPath);
-			setUserAvatar(avatarPath);
-			setIsAvatarPopupOpen(false); // Lukker popup
-		} catch (error) {
-			console.error("Failed to update avatar:", error);
-		}
-	};
-
-	//uferdig
-	async function showRandomMovie() {
-		const movie = await getRandomMovie();
-		if (movie) {
-			setRandomMovie(movie);
-		} else {
-			alert("No liked movies found!");
-		}
-	}
-
-	const closeRandomMoviePopup = () => {
-		setRandomMovie(null);
-	};
-
+	
 	const handleAvatarSelect = async (avatarPath: string) => {
 		try {
 			await setAvatar(avatarPath);
