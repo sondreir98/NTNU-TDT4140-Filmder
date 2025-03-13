@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { nextMovie } from "./Algoritme";
-import { dislikeMovie, getAllMovies, likeMovie } from "./DatabaseAccess";
-import type { Film } from "./Movies";
+import type React from "react";
+import { nextMovie } from "./algoritme";
+import { dislikeMovie, getAllMovies, likeMovie } from "./databaseAccess";
+import type { Film } from "./movies";
 
-function Home() {
+export function Home() {
 	const genres = ["action", "comedy", "drama", "horror", "romance", "sci-fi"];
 	const [noMoreMovies, setNoMoreMovies] = useState<boolean>(false);
 	const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
@@ -38,7 +39,11 @@ function Home() {
 	const updateMovie = useCallback(() => {
 		async function interactWithDatabase() {
 			setCurrentMovie(null);
-			const newMovie = await nextMovie(selectedGenres, selectedYear, wantsPopular);
+			const newMovie = await nextMovie(
+				selectedGenres,
+				selectedYear,
+				wantsPopular,
+			);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
 				setNoMoreMovies(true);
@@ -46,7 +51,7 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [selectedGenres, selectedYear, wantsPopular]);
 
 	const handleLike = useCallback(() => {
@@ -55,7 +60,11 @@ function Home() {
 				await likeMovie(currentMovie.movieId);
 			}
 			setCurrentMovie(null);
-			const newMovie = await nextMovie(selectedGenres, selectedYear, wantsPopular);
+			const newMovie = await nextMovie(
+				selectedGenres,
+				selectedYear,
+				wantsPopular,
+			);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
 				setNoMoreMovies(true);
@@ -63,7 +72,7 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [currentMovie, selectedGenres, selectedYear, wantsPopular]);
 
 	const handleDislike = useCallback(() => {
@@ -72,7 +81,11 @@ function Home() {
 				await dislikeMovie(currentMovie.movieId);
 			}
 			setCurrentMovie(null);
-			const newMovie = await nextMovie(selectedGenres, selectedYear, wantsPopular);
+			const newMovie = await nextMovie(
+				selectedGenres,
+				selectedYear,
+				wantsPopular,
+			);
 			setCurrentMovie(newMovie);
 			if (newMovie === null) {
 				setNoMoreMovies(true);
@@ -80,7 +93,7 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [currentMovie, selectedGenres, selectedYear, wantsPopular]);
 
 	//C: Kode lagt til for filtrering (linje 69-94)
@@ -91,7 +104,6 @@ function Home() {
 	const handleInfoToggle = () => {
 		if (currentMovie !== null && currentMovie !== undefined) {
 			setOpenInfo((prev) => !prev);
-			console.log("ønkser se info om film: ", currentMovie);
 		}
 	};
 
@@ -109,7 +121,7 @@ function Home() {
 	};
 	const handlePopularityChange = () => {
 		setWantsPopular((prev) => !prev);
-	}
+	};
 	const applyFilter = () => {
 		setCurrentMovie(null);
 		updateMovie();
@@ -126,12 +138,12 @@ function Home() {
 		setSearchInput("");
 	};
 
-	const applySearch = async () => {
+	const applySearch = () => {
 		try {
 			const movie = searchedMovies[searchInput];
 			setCurrentMovie(movie);
 			setIsSearchOpen(false);
-		} catch (error) {
+		} catch {
 			setNoMatch(true);
 		}
 	};
@@ -276,7 +288,13 @@ function Home() {
 						</div>
 						<div className="mb-4">
 							<label htmlFor="popularityInput">See only popular movies: </label>
-							<input id="popularityInput" type="checkbox" checked={wantsPopular} onChange={handlePopularityChange} className="mr-2"></input>
+							<input
+								id="popularityInput"
+								type="checkbox"
+								checked={wantsPopular}
+								onChange={handlePopularityChange}
+								className="mr-2"
+							/>
 						</div>
 
 						<button
@@ -305,7 +323,7 @@ function Home() {
 						{currentMovie.name}
 					</h2>
 					<p className="text-center">{currentMovie.info}</p>
-					<br/>
+					<br />
 					<p className="text-center">Release year: {currentMovie.year}</p>
 					<button
 						onClick={() => setOpenInfo(false)}
@@ -358,5 +376,3 @@ const DisLikeButton: React.FC<ButtonProps> = ({ handleDislike }) => {
 		</button>
 	);
 };
-
-export default Home;

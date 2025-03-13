@@ -2,9 +2,9 @@ import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../Database";
+import { auth } from "../database";
 
-const LoginPage = () => {
+export const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -71,5 +71,3 @@ const LoginPage = () => {
 		</div>
 	);
 };
-
-export default LoginPage;

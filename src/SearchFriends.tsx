@@ -3,11 +3,11 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from "./Database";
-import { AddFriendIcon, ArrowLeftIcon } from "./Icons";
+import { db } from "./database";
+import { AddFriendIcon, ArrowLeftIcon } from "./icons";
 
 //Start: kode utviklet med hjelp av KI
-const SearchFriends = () => {
+export const SearchFriends = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [searchResults, setSearchResults] = useState<
 		{ id: string; username: string }[]
@@ -42,7 +42,7 @@ const SearchFriends = () => {
 			const currentUserDoc = await getDoc(currentUserRef);
 			const friendUserDoc = await getDoc(friendUserRef);
 
-			if (!currentUserDoc.exists() || !friendUserDoc.exists()) {
+			if (!(currentUserDoc.exists() && friendUserDoc.exists())) {
 				setError("One of the users does not exist.");
 				return;
 			}
@@ -65,7 +65,7 @@ const SearchFriends = () => {
 			});
 
 			setSuccessMessage(`You and ${friendUsername} are now friends!`);
-		} catch (error) {
+		} catch {
 			setError("An error occurred while adding the friend.");
 		}
 	};
@@ -75,7 +75,9 @@ const SearchFriends = () => {
 		setSuccessMessage(null);
 		setError(null);
 
-		if (!searchQuery.trim()) return;
+		if (!searchQuery.trim()) {
+			return;
+		}
 
 		try {
 			const usersRef = collection(db, "users");
@@ -95,7 +97,7 @@ const SearchFriends = () => {
 				setSearchResults(results);
 				setNoResultsFound(false);
 			}
-		} catch (error) {
+		} catch {
 			setError("Error occurred while searching for users.");
 		}
 	};
@@ -130,7 +132,11 @@ const SearchFriends = () => {
 			)}
 
 			<div className="flex flex-col w-64 mt-2 ml-2 space-y-2">
-				{!noResultsFound ? (
+				{noResultsFound ? (
+					<div className="text-lg font-medium text-gray-400">
+						User not found
+					</div>
+				) : (
 					searchResults.map((user) => (
 						<div key={user.id} className="flex items-center w-full">
 							<span className="text-lg font-medium">{user.username}</span>
@@ -143,10 +149,6 @@ const SearchFriends = () => {
 							</button>
 						</div>
 					))
-				) : (
-					<div className="text-lg font-medium text-gray-400">
-						User not found
-					</div>
 				)}
 			</div>
 
@@ -160,5 +162,3 @@ const SearchFriends = () => {
 		</div>
 	);
 };
-
-export default SearchFriends;

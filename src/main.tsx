@@ -2,15 +2,15 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import Friends from "./Friends.tsx";
-import FriendsProfile from "./FriendsProfile.tsx";
-import Home from "./Home.tsx";
-import Navbar from "./Navbar.tsx";
-import Profile from "./Profile.tsx";
-import ProfilePageButton from "./ProfilePageButton.tsx";
-import SearchFriends from "./SearchFriends.tsx";
-import SignUpPage from "./pages/SignUpPage.tsx";
-import LoginPage from "./pages/loginpage.tsx";
+import { Friends } from "./Friends.tsx";
+import { Home } from "./Home.tsx";
+import { Navbar } from "./Navbar.tsx";
+import { Profile } from "./Profile.tsx";
+import { ProfilePageButton } from "./ProfilePageButton.tsx";
+import { SearchFriends } from "./SearchFriends.tsx";
+import { FriendsProfile } from "./friendsProfile.tsx";
+import { SignUpPage } from "./pages/SignUpPage.tsx";
+import { LoginPage } from "./pages/loginpage.tsx";
 
 const Header = () => {
 	const location = useLocation();
@@ -33,7 +33,7 @@ createRoot(
 			<Header />
 			<main className="max-w-md mx-auto h-17/20 relative">
 				<Routes>
-					<Route index element={<Home />} />
+					<Route index={true} element={<Home />} />
 					<Route path="/login" element={<LoginPage />} />
 					<Route path="/signup" element={<SignUpPage />} />
 					<Route path="/Profile" element={<Profile />} />

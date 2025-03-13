@@ -2,13 +2,13 @@ import {
 	getAllMovies,
 	getDislikedMovies,
 	getLikedMovies,
-} from "./DatabaseAccess";
-import type { Film } from "./Movies";
+} from "./databaseAccess";
+import type { Film } from "./movies";
 
 export async function getNotDisplayedMovieByGenreAndYear(
 	genre: string | null,
 	year: number | null,
-	isPopular: boolean = false,
+	isPopular = false,
 ): Promise<Film | null> {
 	const genreList = genre === null ? [] : [genre];
 	const moviesByGenreAndYear = await getAllMovies(genreList, year, isPopular);
@@ -39,7 +39,7 @@ export async function getNotDisplayedMovieByGenreAndYear(
 export async function nextMovie(
 	genres: string[],
 	year: number | null,
-	isPopular: boolean = false,
+	isPopular = false,
 ): Promise<Film | null> {
 	const likedMovies = await getLikedMovies();
 	const dislikedMovies = await getDislikedMovies();
@@ -62,7 +62,7 @@ export async function nextMovie(
 	const genreSortedByPopularity = genres.sort((a, b) => {
 		return genresPopularity[b] - genresPopularity[a];
 	});
-	let newMovie = null;
+	let newMovie: Film | null = null;
 	let i = 0;
 	while (newMovie === null && i < genres.length) {
 		newMovie = await getNotDisplayedMovieByGenreAndYear(

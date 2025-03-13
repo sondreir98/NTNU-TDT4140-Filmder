@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "./Database";
+import { auth } from "./database";
 import {
 	getDislikedMovies,
 	getLikedMovies,
 	getUser,
 	setAvatar,
-} from "./DatabaseAccess";
-import { removeMovie } from "./DatabaseAccess";
-import { LogoutIcon } from "./Icons";
-import type { Film } from "./Movies";
-import { getRandomMovie } from "./RandomMovie";
+} from "./databaseAccess";
+import { removeMovie } from "./databaseAccess";
+import { LogoutIcon } from "./icons";
+import type { Film } from "./movies";
+import { getRandomMovie } from "./randomMovie";
 
-function Profile() {
+export function Profile() {
 	const [selectedCategory, setSelectedCategory] = useState<
 		"liked" | "disliked"
 	>("liked");
@@ -25,12 +25,12 @@ function Profile() {
 	const navigate = useNavigate();
 
 	const presetAvatars = [
-		"/avatars/avatar1.jpg",
-		"/avatars/avatar2.jpg",
-		"/avatars/avatar3.jpg",
-		"/avatars/avatar4.jpg",
-		"/avatars/avatar5.jpg",
-		"/avatars/avatar6.jpg",
+		"/avatars/Avatar1.jpg",
+		"/avatars/Avatar2.jpg",
+		"/avatars/Avatar3.jpg",
+		"/avatars/Avatar4.jpg",
+		"/avatars/Avatar5.jpg",
+		"/avatars/Avatar6.jpg",
 	];
 
 	// Henter filmer fra db
@@ -40,15 +40,13 @@ function Profile() {
 			const avatar = user?.avatarPath;
 			const disliked = await getDislikedMovies();
 			const liked = await getLikedMovies();
-			console.log("Fetched liked movies:", liked);
-			console.log("User is:", auth.currentUser);
 
 			setLikedMovies(liked);
 			setDislikedMovies(disliked);
 			setUserAvatar(avatar ?? "https://images.desenio.com/zoom/18823_1.jpg");
 		}
 		fetchMovies();
-	}, []);	
+	}, []);
 
 	async function showRandomMovie() {
 		if (likedMovies.length === 0) {
@@ -62,7 +60,7 @@ function Profile() {
 	const closeRandomMoviePopup = () => {
 		setRandomMovie(null);
 	};
-	
+
 	const handleAvatarSelect = async (avatarPath: string) => {
 		try {
 			await setAvatar(avatarPath);
@@ -204,20 +202,21 @@ function Profile() {
 						<div className="bg-white p-4 rounded-lg shadow-lg">
 							<p>{popupMessage}</p>
 							<button
-								type="button" 
+								type="button"
 								onClick={() => setPopupMessage(null)}
-								className="mt-4 ml-16 p-1 bg-blue-500 text-white rounded" 
-                            >
+								className="mt-4 ml-16 p-1 bg-blue-500 text-white rounded"
+							>
 								Close
 							</button>
 						</div>
 					</div>
 				)}
-				
+
 				{randomMovie && (
 					<div className="fixed inset-0 bg-primary bg-opacity-50 flex justify-center items-center">
 						<div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
 							<h2 className="text-xl font-bold mb-2">{randomMovie.name}</h2>
+							<img src={randomMovie.logoPath} alt={randomMovie.name} />
 							<p className="text-sm text-gray-600">{randomMovie.year}</p>
 							<p className="text-gray-500 mt-2">{randomMovie.info}</p>
 							<p className="text-sm text-gray-400 mt-2">
@@ -271,5 +270,3 @@ function Profile() {
 		</div>
 	);
 }
-
-export default Profile;

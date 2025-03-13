@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import UseFriends from "./GetFriends";
-import type { Film } from "./Movies";
-import { getSortedLikedMoviesAmongFriends } from "./TopFive";
+import { UseFriends } from "./getFriends";
+import type { Film } from "./movies";
+import { getSortedLikedMoviesAmongFriends } from "./topFive";
 
 export type Friend = {
 	id: string;
@@ -10,15 +10,10 @@ export type Friend = {
 	avatar: string;
 };
 
-type User = {
-	friends: string[];
-	username: string;
-};
-
-function Friends() {
+export function Friends() {
 	const [movies, setMovies] = useState<Film[]>([]);
 	const [selectedMovie, setSelectedMovie] = useState<Film | null>(null);
-	const { friends, loading } = UseFriends();
+	const friends = UseFriends().friends;
 
 	useEffect(() => {
 		async function fetchMovies() {
@@ -129,5 +124,3 @@ function Friends() {
 		</div>
 	);
 }
-
-export default Friends;

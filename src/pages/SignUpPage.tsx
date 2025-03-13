@@ -2,10 +2,11 @@ import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
+import type React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, db } from "../Database";
+import { auth, db } from "../database";
 
-const SignUpPage = () => {
+export const SignUpPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,7 +26,7 @@ const SignUpPage = () => {
 				email,
 				password,
 			);
-			await updateProfile(userCredential.user, {displayName: username});
+			await updateProfile(userCredential.user, { displayName: username });
 			await setDoc(doc(db, "users", userCredential.user.uid), {
 				email: userCredential.user.email,
 				username: userCredential.user.displayName,
@@ -103,5 +104,3 @@ const SignUpPage = () => {
 		</div>
 	);
 };
-
-export default SignUpPage;

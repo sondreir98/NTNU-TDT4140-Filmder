@@ -4,6 +4,7 @@ import {
 	addDoc,
 	and,
 	collection,
+	deleteDoc,
 	doc,
 	getCountFromServer,
 	getDoc,
@@ -12,8 +13,8 @@ import {
 	setDoc,
 	where,
 } from "firebase/firestore";
-import { auth, db } from "./Database";
-import type { Film, User } from "./Movies";
+import { auth, db } from "./database";
+import type { Film, User } from "./movies";
 
 type FilmDatabaseResult = {
 	name: string;
@@ -150,7 +151,7 @@ export async function getFriendsDislikedMovies(
 export async function getAllMovies(
 	genreFilter: string[] = [],
 	yearFilter: number | null = null,
-	popularityFilter: boolean = false,
+	popularityFilter = false,
 ): Promise<Film[]> {
 	const rawMovies: Film[] = [];
 	const movieIds = new Set<string>();
@@ -163,25 +164,23 @@ export async function getAllMovies(
 				query(collection(db, "films"), where("year", "==", yearFilter)),
 			);
 		}
+	} else if (yearFilter === null) {
+		querySnapshot = await getDocs(
+			query(
+				collection(db, "films"),
+				where("genre", "array-contains-any", genreFilter),
+			),
+		);
 	} else {
-		if (yearFilter === null) {
-			querySnapshot = await getDocs(
-				query(
-					collection(db, "films"),
+		querySnapshot = await getDocs(
+			query(
+				collection(db, "films"),
+				and(
+					where("year", "==", yearFilter),
 					where("genre", "array-contains-any", genreFilter),
 				),
-			);
-		} else {
-			querySnapshot = await getDocs(
-				query(
-					collection(db, "films"),
-					and(
-						where("year", "==", yearFilter),
-						where("genre", "array-contains-any", genreFilter),
-					),
-				),
-			);
-		}
+			),
+		);
 	}
 	for (const filmDocument of querySnapshot.docs) {
 		if (!movieIds.has(filmDocument.id)) {
@@ -194,9 +193,11 @@ export async function getAllMovies(
 			);
 		}
 	}
-	const popularMovies = [];
+	const popularMovies: Film[] = [];
 	if (popularityFilter) {
-		const totalCount = (await getCountFromServer(query(collection(db, "userLikedFilms")))).data().count;
+		const totalCount = (
+			await getCountFromServer(query(collection(db, "userLikedFilms")))
+		).data().count;
 		for (const movie of rawMovies) {
 			const coll = collection(db, "userLikedFilms");
 			const q = query(coll, where("film", "==", movie.movieId));
@@ -207,9 +208,8 @@ export async function getAllMovies(
 			}
 		}
 		return popularMovies;
-	} else {
-		return rawMovies;
 	}
+	return rawMovies;
 }
 export async function likeMovie(movieId: string) {
 	if (auth.currentUser === null) {
@@ -279,16 +279,16 @@ export const removeMovie = async (
 
 		const querySnapshot = await getDocs(q);
 
-		if (!querySnapshot.empty) {
+		if (querySnapshot.empty) {
+			console.warn("No matching document found to delete.");
+		} else {
 			for (const doc of querySnapshot.docs) {
 				await deleteDoc(doc.ref);
 			}
 
-			console.log(
+			console.info(
 				`Successfully removed movie ${movieId} from ${collectionName}`,
 			);
-		} else {
-			console.warn("No matching document found to delete.");
 		}
 	} catch (error) {
 		console.error("Error removing movie:", error);
@@ -320,6 +320,6 @@ export async function getFriend(
 		};
 	}
 	// If no document exists for that friendId
-	console.log("Friend not found");
+	console.info("Friend not found");
 	return null;
 }
