@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { nextMovie } from "./Algoritme";
-import { dislikeMovie, likeMovie } from "./DatabaseAccess";
+import { dislikeMovie, getAllMovies, likeMovie } from "./DatabaseAccess";
 import type { Film } from "./Movies";
 
 function Home() {
@@ -10,13 +10,31 @@ function Home() {
 	const [selectedGenres, setSelectedGenres] = useState<string[]>(genres);
 	const [selectedYear, setSelectedYear] = useState<number | null>(null);
 	const [currentMovie, setCurrentMovie] = useState<Film | null>(null);
+	const [searchInput, setSearchInput] = useState("");
+	const [searchedMovies, setSearchedMovies] = useState<Record<string, Film>>(
+		{},
+	);
+	const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+	const [noMatch, setNoMatch] = useState<boolean>(false);
 
 	useEffect(() => {
 		updateMovie();
+		updateSearchedMovies();
+	}, []);
+
+	const updateSearchedMovies = useCallback(() => {
+		(async () => {
+			const moviesResult = await getAllMovies();
+			const searchOptions: Record<string, Film> = {};
+			for (const movie of moviesResult) {
+				searchOptions[movie.name] = movie;
+			}
+			setSearchedMovies(searchOptions);
+		})();
 	}, []);
 
 	const updateMovie = useCallback(() => {
-		async function ineractWithDatabase() {
+		async function interactWithDatabase() {
 			setCurrentMovie(null);
 			const newMovie = await nextMovie(selectedGenres, selectedYear);
 			setCurrentMovie(newMovie);
@@ -26,11 +44,11 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [selectedGenres, selectedYear]);
 
 	const handleLike = useCallback(() => {
-		async function ineractWithDatabase() {
+		async function interactWithDatabase() {
 			if (currentMovie !== null) {
 				await likeMovie(currentMovie.movieId);
 			}
@@ -43,11 +61,11 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [currentMovie, selectedGenres, selectedYear]);
 
 	const handleDislike = useCallback(() => {
-		async function ineractWithDatabase() {
+		async function interactWithDatabase() {
 			if (currentMovie !== null) {
 				await dislikeMovie(currentMovie.movieId);
 			}
@@ -60,7 +78,7 @@ function Home() {
 				setNoMoreMovies(false);
 			}
 		}
-		ineractWithDatabase();
+		interactWithDatabase();
 	}, [currentMovie, selectedGenres, selectedYear]);
 
 	//C: Kode lagt til for filtrering (linje 69-94)
@@ -85,10 +103,30 @@ function Home() {
 		setIsFilterOpen(false);
 	};
 
+	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchInput(event.target.value);
+	};
+
+	const handleSearchToggle = () => {
+		setIsSearchOpen((prev) => !prev);
+		setNoMatch(false);
+		setSearchInput("");
+	};
+
+	const applySearch = async () => {
+		try {
+			const movie = searchedMovies[searchInput];
+			setCurrentMovie(movie);
+			setIsSearchOpen(false);
+		} catch (error) {
+			setNoMatch(true);
+		}
+	};
+
 	return (
 		<>
 			<div className="w-full h-full flex bg-gray-200 items-center justify-center">
-				{currentMovie !== null ? (
+				{currentMovie !== null && currentMovie !== undefined ? (
 					<img
 						className="max-w-full max-h-full"
 						src={currentMovie.logoPath}
@@ -100,6 +138,68 @@ function Home() {
 					<h2 className="text-center text-3xl font-bold">Loading...</h2>
 				)}
 			</div>
+			{/*C: Kode lagt til for søke-popUp*/}
+			<button
+				onClick={handleSearchToggle}
+				type="button"
+				className="absolute top-12 right-4 bg-secondary text-white px-4 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
+			>
+				<img
+					src="https://www.svgrepo.com/show/522266/search.svg"
+					alt="Search"
+					className="w-4 h-4"
+				/>
+			</button>
+			{isSearchOpen && (
+				<div className="absolute inset-0 flex items-center justify-center bg-grey bg-opacity-50 z-50">
+					<div className="bg-white p-6 rounded-lg shadow-lg w-3/4 relative">
+						<button
+							onClick={handleSearchToggle}
+							type="button"
+							className="bg-gray-300 text-sm px-2 py-1 rounded hover:bg-gray-400 transition cursor-pointer"
+						>
+							Close
+						</button>
+						<h2 className="text-lg font-semibold mb-4">Movie search</h2>
+						<div className="mb-4">
+							<label
+								htmlFor="searchInput"
+								className="block text-sm font-semibold mb-1"
+							>
+								Search for a movie by its title:
+							</label>
+							<input
+								id="searchInput"
+								list="searchOptions"
+								type="text"
+								onChange={handleSearchChange}
+								value={searchInput}
+								className="w-full border p-2 rounded"
+								placeholder="Enter movie title"
+							/>
+							<datalist id="searchOptions">
+								{Object.keys(searchedMovies).map((movieName) => (
+									<option key={movieName} value={movieName}>
+										{movieName}
+									</option>
+								))}
+							</datalist>
+						</div>
+						<button
+							onClick={applySearch}
+							type="button"
+							className="mt-4 bg-primary text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition cursor-pointer"
+						>
+							Apply search
+						</button>
+						{noMatch && (
+							<p className="text-red-500 text-sm mt-2">
+								No movie title matches your search
+							</p>
+						)}
+					</div>
+				</div>
+			)}
 
 			<LikeButton handleLike={handleLike} />
 			<DisLikeButton handleDislike={handleDislike} />
@@ -116,14 +216,13 @@ function Home() {
 					className="w-4 h-4"
 				/>
 			</button>
-
 			{isFilterOpen && (
 				<div className="absolute inset-0 flex items-center justify-center bg-grey bg-opacity-50">
 					<div className="bg-white p-6 rounded-lg shadow-lg w-3/4 relative">
 						<button
 							onClick={handleFilterToggle}
 							type="button"
-							className="bg-gray-300 text-sm px-2 py-1 rounded hover:bg-gray-400 transition"
+							className="bg-gray-300 text-sm px-2 py-1 rounded hover:bg-gray-400 transition cursor-pointer"
 						>
 							Close
 						</button>
@@ -166,7 +265,7 @@ function Home() {
 						<button
 							onClick={applyFilter}
 							type="button"
-							className="mt-4 bg-primary text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition"
+							className="mt-4 bg-primary text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition cursor-pointer"
 						>
 							Apply Filter
 						</button>

@@ -62,7 +62,7 @@ function Profile() {
 	const closeRandomMoviePopup = () => {
 		setRandomMovie(null);
 	};
-
+	
 	const handleAvatarSelect = async (avatarPath: string) => {
 		try {
 			await setAvatar(avatarPath);
