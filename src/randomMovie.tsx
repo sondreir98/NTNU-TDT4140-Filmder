@@ -1,5 +1,5 @@
-import { getLikedMovies } from "./DatabaseAccess";
-import type { Film } from "./Movies";
+import { getLikedMovies } from "./databaseAccess";
+import type { Film } from "./movies";
 
 async function getRandomMovie(): Promise<Film | null> {
 	const likedMovies = await getLikedMovies();

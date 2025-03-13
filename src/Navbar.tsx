@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
-import { HomeIcon, SearchIcon, UsersIcon } from "./Icons";
+import { HomeIcon, UsersIcon } from "./icons";
 
-function Navbar() {
+export function Navbar() {
 	return (
 		<nav className="flex justify-around items-center w-full bg-white shadow-lg h-full">
 			<NavLink
@@ -21,5 +21,3 @@ function Navbar() {
 		</nav>
 	);
 }
-
-export default Navbar;

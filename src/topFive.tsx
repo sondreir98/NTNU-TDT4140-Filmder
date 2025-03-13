@@ -1,15 +1,14 @@
 import { doc, getDoc } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
-import { auth, db } from "./Database";
-import { getUsersLikedMovies } from "./DatabaseAccess";
-import type { Film } from "./Movies";
+import { auth, db } from "./database";
+import { getUsersLikedMovies } from "./databaseAccess";
+import type { Film } from "./movies";
 
 type User = {
 	friends: string[];
 	username: string;
 };
 async function getUsersWithIds(uids: string[]): Promise<User[]> {
-	const users = [];
+	const users: User[] = [];
 	for (const uid of uids) {
 		const user = (await getDoc(doc(db, "users", uid))).data();
 		if (!user) {
@@ -20,7 +19,7 @@ async function getUsersWithIds(uids: string[]): Promise<User[]> {
 	return users;
 }
 async function getMoviesWithIds(ids: string[]): Promise<Film[]> {
-	const movies = [];
+	const movies: Film[] = [];
 	for (const id of ids) {
 		const movie = (await getDoc(doc(db, "films", id))).data();
 		if (!movie) {
@@ -39,7 +38,6 @@ async function getCurrentUser(): Promise<User> {
 async function getCurrentUsersFriendsLikedMovies(): Promise<
 	Record<string, number>
 > {
-	console.log(await getCurrentUser());
 	const friendUids = (await getCurrentUser()).friends;
 	friendUids.push(auth.currentUser?.uid as string);
 	const likedMoviesMap: Record<string, number> = {};

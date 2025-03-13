@@ -4,6 +4,8 @@ test.beforeEach(async ({ page }) => {
 	await page.goto("https://demo.playwright.dev/todomvc");
 });
 
+const HAS_3_REGEX = /3/;
+
 const TODO_ITEMS = [
 	"buy some cheese",
 	"feed the cat",
@@ -63,7 +65,7 @@ test.describe("New Todo", () => {
 		await expect(page.getByText("3 items left")).toBeVisible();
 		await expect(todoCount).toHaveText("3 items left");
 		await expect(todoCount).toContainText("3");
-		await expect(todoCount).toHaveText(/3/);
+		await expect(todoCount).toHaveText(HAS_3_REGEX);
 
 		// Check all items in one call.
 		await expect(page.getByTestId("todo-title")).toHaveText(TODO_ITEMS);

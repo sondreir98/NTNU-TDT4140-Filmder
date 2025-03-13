@@ -1,6 +1,7 @@
+import type React from "react";
 import { useNavigate } from "react-router-dom";
 
-const ProfilePageButton: React.FC = () => {
+export const ProfilePageButton: React.FC = () => {
 	const navigate = useNavigate();
 	return (
 		<button
@@ -16,5 +17,3 @@ const ProfilePageButton: React.FC = () => {
 		</button>
 	);
 };
-
-export default ProfilePageButton;

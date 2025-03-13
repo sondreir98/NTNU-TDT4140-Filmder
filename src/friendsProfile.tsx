@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { auth } from "./Database";
+import { auth } from "./database";
 import {
 	getFriend,
 	getFriendsDislikedMovies,
 	getFriendsLikedMovies,
-} from "./DatabaseAccess";
-import type { Film } from "./Movies";
+} from "./databaseAccess";
+import type { Film } from "./movies";
 
 //kode utviklet med hjelp av KI
-function FriendsProfile() {
+export function FriendsProfile() {
 	const { friendId } = useParams();
 	const [friend, setFriend] = useState<{
 		username: string;
@@ -21,7 +21,9 @@ function FriendsProfile() {
 
 	useEffect(() => {
 		async function fetchFriendData() {
-			if (!friendId) return;
+			if (!friendId) {
+				return;
+			}
 
 			const friendData = await getFriend(friendId);
 			setFriend(friendData);
@@ -37,7 +39,9 @@ function FriendsProfile() {
 	const moviesToShow =
 		selectedCategory === "liked" ? likedMovies : dislikedMovies;
 
-	if (!friend) return <p className="text-center text-gray-500">Loading...</p>;
+	if (!friend) {
+		return <p className="text-center text-gray-500">Loading...</p>;
+	}
 	return (
 		<div className="bg-gray-100 p-4 flex flex-col items-center h-full">
 			{friend.avatarPath && (
@@ -100,5 +104,3 @@ function FriendsProfile() {
 		</div>
 	);
 }
-
-export default FriendsProfile;
