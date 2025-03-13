@@ -56,10 +56,6 @@ export function FriendsProfile() {
 				{friend?.username || "Username"}
 			</p>
 
-			<p className="text-gray-600">
-				{auth.currentUser?.email || "email@example.com"}
-			</p>
-
 			<div className="w-full max-w-lg bg-white p-4 rounded-lg shadow-lg mb-1 mt-3 flex-col">
 				<label
 					htmlFor="movieFilter"
