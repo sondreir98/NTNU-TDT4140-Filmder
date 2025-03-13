@@ -25,7 +25,7 @@ const SignUpPage = () => {
 				email,
 				password,
 			);
-			await updateProfile(userCredential.user, { displayName: username });
+			await updateProfile(userCredential.user, {displayName: username});
 			await setDoc(doc(db, "users", userCredential.user.uid), {
 				email: userCredential.user.email,
 				username: userCredential.user.displayName,
