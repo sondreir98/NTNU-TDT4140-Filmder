@@ -27,13 +27,13 @@ export const LoginPage = () => {
 	return (
 		//Fargene endres til slutt
 		<div className="flex flex-col items-center justify-center h-full bg-secondary text-dark">
-			<h1 className="text-4xl font-bold mb-8">Filmder</h1>
+			<h1 className="text-4xl font-bold mb-4">Filmder</h1>
 			<input
 				type="email"
 				placeholder="Email"
 				value={email}
 				onChange={(e) => setEmail(e.target.value)}
-				className="shadow mb-4 px-4 py-4 rounded-[2vw] w-80 mt-70 text-dark font-semibold bg-primary focus:outline-none focus:ring-2 focus:ring-dark ease-linear transition duration-200 "
+				className="shadow mb-4 px-4 py-4 rounded-[2vw] w-80 mt-65 text-dark font-semibold bg-primary focus:outline-none focus:ring-2 focus:ring-dark ease-linear transition duration-200 "
 			/>
 			<input
 				type="password"
@@ -56,7 +56,7 @@ export const LoginPage = () => {
 						<p>{error}</p>
 					</div>
 				)}
-				<div className="text-center mt-0">
+				<div className="text-center mt-0 mb-3">
 					<p className="text-sm">
 						Don't have an account?{" "}
 						<Link

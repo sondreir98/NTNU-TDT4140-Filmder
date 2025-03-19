@@ -53,7 +53,7 @@ export const SignUpPage = () => {
 					placeholder="Email"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
-					className="shadow mb-4 px-4 py-4 rounded-[2vw] w-80 mt-35 font-semibold text-white bg-blue-400/50 focus:outline-none focus:ring-2 focus:ring-gray-300 ease-linear transition duration-500 "
+					className="shadow mb-4 px-4 py-4 rounded-[2vw] w-80 mt-25 font-semibold text-white bg-blue-400/50 focus:outline-none focus:ring-2 focus:ring-gray-300 ease-linear transition duration-500 "
 				/>
 				<input
 					type="text"
