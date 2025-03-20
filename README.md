@@ -79,15 +79,16 @@ For a specific test, run `pnpm playwright test -g "should login user"`
 ## Pair programming
 
 After retrospective nr. 1 we have decided to utilize pair programming in future work.
-We have decided not to include documentation about this in individual commits in git, to make the commit history as clean as possible.
 
-We have managed to achieve this, and each member has pair programmed with the others members in the group. This text in this readme file serves as documentation for this. In future retrospectives there is a possibility of opening for a discussion about if documentation for pair-programming should be revised, and instead be included in the individual commits as per agile developement.
+We have managed to achieve this, but have forgotten to document this in git commits. Each member has pair programmed with the others members in the group. This text in this readme file serves as documentation for this. In future retrospectives there is a possibility of opening for a discussion about if documentation for pair-programming should be revised, and instead be included in the individual commits as per agile developement.
 
 We have pair programmed when making the algorithm and filtration(Johan and Camilla).
-We have pair programmet when making refactor changes to getting the next movie for home page.
-We have pair programmed when setting up firbase.
-We have pair programmed when making the friends page.
-We have pair programmed when making the prifle page.
-We have pair programmed when making creating popup info button
-We have pair programmed when making databse calls.
-We have pair programmed when making the navigation bar
+We have pair programmet when making refactor changes to getting the next movie for home page(Vegard and Anne)
+We have pair programmed when setting up firbase (Sondre and Vegard).
+We have pair programmed when making the friends page(Vegard and Johan).
+We have pair programmed when making the prifle page(Sondre and Johan).
+We have pair programmed when making creating popup info button(Johan and Anne)
+We have pair programmed when making database calls(Sondre and Camilla).
+We have pair programmed when making the navigation bar(Camilla and Anne).
+We have pari programmed when making the log in and sign up page (Sondre and Anne).
+We have pair programmed when adding icons (Vegard and Camilla)
