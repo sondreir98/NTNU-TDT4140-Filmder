@@ -75,3 +75,10 @@ Run `pnpm playwright test` to run your tests.
 For a single file, run `pnpm playwright test tests/example.spec.ts`
 
 For a specific test, run `pnpm playwright test -g "should login user"`
+
+## Pair programming
+
+After retrospective nr. 1 we have decided to utilize pair programming in future work.
+We have decided not to include documentation about this in individual commits in git, to make the commit history as clean as possible.
+
+We have managed to achieve this, and each member has pair programmed with the others members in the group. This text in this readme file serves as documentation for this. In future retrospectives there is a possibility of opening for a discussion about if documentation for pair-programming should be revised, and instead be included in the individual commits as per agile developement.
