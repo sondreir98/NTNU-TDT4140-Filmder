@@ -214,7 +214,7 @@ export function Profile() {
 
 				{randomMovie && (
 					<div className="fixed inset-0 bg-primary bg-opacity-50 flex justify-center items-center">
-						<div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+						<div className="bg-white p-4 rounded-lg shadow-lg text-center max-w-[90vw] max-h-[80vh] overflow-auto">
 							<h2 className="text-xl font-bold mb-2">{randomMovie.name}</h2>
 							<img src={randomMovie.logoPath} alt={randomMovie.name} />
 							<p className="text-sm text-gray-600">{randomMovie.year}</p>
