@@ -82,3 +82,12 @@ After retrospective nr. 1 we have decided to utilize pair programming in future 
 We have decided not to include documentation about this in individual commits in git, to make the commit history as clean as possible.
 
 We have managed to achieve this, and each member has pair programmed with the others members in the group. This text in this readme file serves as documentation for this. In future retrospectives there is a possibility of opening for a discussion about if documentation for pair-programming should be revised, and instead be included in the individual commits as per agile developement.
+
+We have pair programmed when making the algorithm and filtration(Johan and Camilla).
+We have pair programmet when making refactor changes to getting the next movie for home page.
+We have pair programmed when setting up firbase.
+We have pair programmed when making the friends page.
+We have pair programmed when making the prifle page.
+We have pair programmed when making creating popup info button
+We have pair programmed when making databse calls.
+We have pair programmed when making the navigation bar
